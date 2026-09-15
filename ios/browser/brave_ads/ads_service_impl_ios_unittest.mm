@@ -9,6 +9,8 @@
 #include "brave/components/brave_ads/core/browser/service/test/ads_service_waiter.h"
 #include "brave/components/brave_ads/core/public/prefs/pref_names.h"
 #include "brave/components/brave_ads/core/public/prefs/pref_registry.h"
+#include "brave/components/brave_rewards/core/pref_names.h"
+#include "brave/components/brave_rewards/core/pref_registry.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -19,6 +21,7 @@ class BraveAdsServiceImplIOSTest : public PlatformTest {
  public:
   BraveAdsServiceImplIOSTest() {
     RegisterProfilePrefs(prefs_.registry());
+    brave_rewards::RegisterProfilePrefs(prefs_.registry());
     ads_service_ = std::make_unique<AdsServiceImplIOS>(prefs_);
   }
 
@@ -32,7 +35,9 @@ TEST_F(BraveAdsServiceImplIOSTest,
        ClearsAdsDataWhenSponsoredAdsBecomeDisabled) {
   // Arrange
   prefs_.SetBoolean(prefs::kSponsoredEnabled, true);
-  // A proxy for the `brave.brave_ads.*` prefs cleared alongside it.
+  // `ClearAdsPrefs` clears the whole `brave.brave_ads.*` prefix at once, so
+  // checking this one pref is enough to tell whether the whole prefix was
+  // cleared.
   prefs_.SetString(prefs::kDiagnosticId, "foo");
   test::AdsServiceWaiter waiter(*ads_service_);
 
@@ -69,6 +74,40 @@ TEST_F(BraveAdsServiceImplIOSTest,
 
   // Assert
   EXPECT_EQ("foo", prefs_.GetString(prefs::kDiagnosticId));
+}
+
+TEST_F(
+    BraveAdsServiceImplIOSTest,
+    PreservesAdsDataWhenSponsoredAdsBecomeDisabledForBraveRewardsUser) {
+  // Arrange
+  prefs_.SetBoolean(prefs::kSponsoredEnabled, true);
+  prefs_.SetBoolean(brave_rewards::prefs::kEnabled, true);
+  prefs_.SetString(prefs::kDiagnosticId, "foo");
+
+  // Act
+  prefs_.SetBoolean(prefs::kSponsoredEnabled, false);
+
+  // Assert
+  EXPECT_EQ("foo", prefs_.GetString(prefs::kDiagnosticId));
+}
+
+TEST_F(BraveAdsServiceImplIOSTest,
+       ClearsAdsDataWhenBraveRewardsBecomesDisabled) {
+  // Arrange
+  prefs_.SetBoolean(prefs::kSponsoredEnabled, true);
+  prefs_.SetBoolean(brave_rewards::prefs::kEnabled, true);
+  // `ClearAdsPrefs` clears the whole `brave.brave_ads.*` prefix at once, so
+  // checking this one pref is enough to tell whether the whole prefix was
+  // cleared.
+  prefs_.SetString(prefs::kDiagnosticId, "foo");
+  test::AdsServiceWaiter waiter(*ads_service_);
+
+  // Act
+  prefs_.SetBoolean(brave_rewards::prefs::kEnabled, false);
+  waiter.WaitForOnDidClearAdsServiceData();
+
+  // Assert
+  EXPECT_FALSE(prefs_.HasPrefPath(prefs::kDiagnosticId));
 }
 
 }  // namespace brave_ads
