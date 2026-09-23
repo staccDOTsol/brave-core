@@ -1,5 +1,5 @@
 name: Creator browser native build
-run-name: Native ${{ inputs.target }} · ${{ inputs.configuration }} · ${{ inputs.runner }}
+run-name: ${{ inputs.preflight_only && 'Capacity check only' || 'Native build' }} · ${{ inputs.target }} · ${{ inputs.configuration }} · ${{ inputs.runner }}
 
 on:
   workflow_dispatch:
