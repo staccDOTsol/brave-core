@@ -2,7 +2,7 @@ name: Creator browser checks
 
 on:
   push:
-    branches: ['codex/creator-economy-foundation']
+    branches: ['master', 'codex/**']
     paths:
       - 'components/creator_economy/**'
       - 'components/brave_wallet_ui/**'
@@ -60,7 +60,7 @@ jobs:
         with:
           node-version: '24'
       - name: Verify mint referrals, accounting, creator library and detection
-        run: node --test "components/creator_economy/common/*.test.mjs"
+        run: node --test "components/creator_economy/common/*.test.mjs" "components/creator_economy/ci/*.test.mjs"
       - name: Type-check creator wallet models
         working-directory: ${{ runner.temp }}
         run: npm exec --yes --package=typescript@5.9.3 -- tsc --noEmit --strict --target ES2019 --lib ESNext,DOM --module ESNext --moduleResolution bundler "${{ github.workspace }}/components/creator_economy/common/mint-fees.ts" "${{ github.workspace }}/components/brave_wallet_ui/common/creator-economy/creator-library.ts"
