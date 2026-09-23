@@ -33,6 +33,8 @@ resources outside this repository, go to:
 
 ### General Development
 
+- [Creator economy foundation](creator_economy.md) - Creator stake pools,
+  first-interaction setup, curation accounting and remote build plan.
 - [Running test suites](running_test_suites.md) - Selectively execute unit,
   browser and typescript tests.
 - [`gni` notes](gni_sources.md) - Brief notes on the use of `source.gni` files

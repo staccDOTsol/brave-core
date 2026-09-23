@@ -1,0 +1,53 @@
+name: Creator economy foundation
+
+on:
+  push:
+    branches: ['codex/creator-economy-foundation']
+    paths:
+      - 'components/creator_economy/**'
+      - '.github/workflows/creator-economy.yml'
+      - '.github/workflows/creator-native-build.yml'
+      - 'docs/creator_economy.md'
+  pull_request:
+    paths:
+      - 'components/creator_economy/**'
+      - '.github/workflows/creator-economy.yml'
+      - '.github/workflows/creator-native-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: creator-foundation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  accounting:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: components/creator_economy
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '24'
+      - name: Verify accounting and initialization retries
+        run: node --test components/creator_economy/prototype/model.test.mjs
+      - name: Check browser module syntax
+        run: node --check components/creator_economy/prototype/app.mjs
+      - name: Check remote build script syntax
+        run: node --check components/creator_economy/ci/native-build.mjs
+      - name: Save runnable prototype
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: creator-economy-prototype
+          path: components/creator_economy/
+          retention-days: 14
+          if-no-files-found: error

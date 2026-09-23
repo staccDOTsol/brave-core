@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Field Notes · Creator economy prototype</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.mjs"></script>
+</head>
+<body>
+  <header><a class="wordmark" href="#">◈ <span>common</span></a>
+    <nav aria-label="Main"><a href="#creator">Creator</a><a href="#content">Content</a><a href="#settings">Settings</a></nav>
+    <span class="badge">LOCAL PROTOTYPE</span>
+  </header>
+  <main>
+    <div class="eyebrow">A LITTLE SUPPORT. A LASTING STAKE.</div>
+    <section class="hero" id="creator">
+      <div><div class="identity"><span class="avatar">fn.</span><span>YouTube · @fieldnotes<br><small>Fictional creator · demo data</small></span></div>
+        <h1>Field Notes<span class="muted">, yours to support.</span></h1>
+        <p>Hold a stake in the creators you find. Help good work travel.</p>
+      </div>
+      <span id="claim-state" class="badge neutral">UNCLAIMED PROFILE</span>
+    </section>
+    <div class="layout">
+      <section aria-label="Creator pool">
+        <div class="metrics">
+          <div><small>BACKING</small><strong id="backing">0.000000</strong><span>SOL in this creator’s pool</span></div>
+          <div><small>SUPPLY</small><strong id="supply">0.000000</strong><span>NOTE tokens outstanding</span></div>
+          <div><small>SOL PER TOKEN</small><strong id="nav">1.000000</strong><span id="nav-caption">Initial issue rate</span></div>
+          <div><small>FEES BURNED</small><strong id="burned">0.000000</strong><span>NOTE removed from supply</span></div>
+        </div>
+        <section class="panel trade" aria-label="Support this creator">
+          <div class="tabs" role="tablist" aria-label="Action">
+            <button role="tab" id="mint-tab" aria-controls="trade-panel" aria-selected="true" data-mode="mint">Mint</button>
+            <button role="tab" id="redeem-tab" aria-controls="trade-panel" aria-selected="false" data-mode="redeem">Burn / redeem</button>
+            <button role="tab" id="transfer-tab" aria-controls="trade-panel" aria-selected="false" data-mode="transfer">Send</button>
+          </div>
+          <div id="trade-panel" role="tabpanel" aria-labelledby="mint-tab">
+            <div class="input-label"><label id="amount-label" for="amount">YOU DEPOSIT</label><span id="available">Available: 100 SOL</span></div>
+            <div class="amount"><input id="amount" value="10" inputmode="decimal" autocomplete="off" aria-describedby="quote-error"><span id="input-unit">SOL</span></div>
+            <label for="attribution">Credit the discovery to</label>
+            <select id="attribution"><option value="film">A slower way to see the city · curator River</option><option value="essay">The case for noticing · curator Alex</option><option value="">Creator-level support · no content attribution</option></select>
+            <div class="receive"><small id="receive-label">YOU RECEIVE</small><strong><span id="received">—</span> <span id="output-unit">NOTE</span></strong></div>
+            <dl class="quote"><div><dt id="fee-label">Mint fee · 6.9%</dt><dd id="fee">—</dd></div><div><dt>Fee shares burned</dt><dd id="quote-burn">—</dd></div><div><dt>Content curation budget</dt><dd id="quote-curation">—</dd></div><div><dt>Setup recovery allocation</dt><dd id="quote-setup">—</dd></div></dl>
+            <p class="hint" id="first-action">Your first support creates this creator’s pool automatically. Setup is sponsored and recovered from a portion of fees.</p>
+            <p id="quote-error" class="error" role="alert"></p>
+            <button id="execute" class="primary">Simulate mint →</button>
+            <p class="fine">Demo funds only. Quotes exclude network and route costs. Transfers settle their fee burn in the same simulated step.</p>
+          </div>
+        </section>
+      </section>
+      <aside>
+        <section class="panel position"><div class="section-title"><h2>Your position</h2><span class="badge">DEMO</span></div>
+          <strong class="balance"><span id="position">0.000000</span><small>NOTE</small></strong>
+          <p id="position-sol">0 SOL after the redemption fee</p>
+          <div class="position-art" aria-hidden="true"><span>find.</span><span>support.</span><span>stay.</span></div>
+          <dl><div><dt>Available SOL</dt><dd id="sol-balance">100.000000</dd></div><div><dt>Curator budget accrued</dt><dd id="curator-total">0 NOTE</dd></div><div><dt>Setup fee shares reserved</dt><dd id="setup-total">0 NOTE</dd></div></dl>
+          <p class="fine">Fee shares reserved for setup are not SOL repayments until converted and received. The demo does not convert them.</p>
+        </section>
+        <section class="panel activity"><h2>Activity</h2><p id="status" role="status">Ready for the first supporter.</p><ol id="activity"></ol></section>
+      </aside>
+    </div>
+    <section id="content" class="content-section"><div class="section-title"><div><div class="eyebrow">UNDER THE CREATOR UMBRELLA</div><h2>Good work, found early.</h2></div><span class="muted">Curation follows the piece.</span></div>
+      <div class="content-grid"><article class="content-card"><div class="cover city" aria-hidden="true"><span>look<br>closer.</span></div><div class="card-body"><small>FILM · 08:42</small><h3>A slower way to see the city</h3><p>Found by River · fee-funded curation</p><strong id="film-budget">0.000000 NOTE</strong><button data-content="film">Support this piece ↗</button></div></article>
+        <article class="content-card"><div class="cover essay" aria-hidden="true"><span>the art<br>of noticing</span></div><div class="card-body"><small>ESSAY · 6 MIN READ</small><h3>The case for noticing</h3><p>Found by Alex · fee-funded curation</p><strong id="essay-budget">0.000000 NOTE</strong><button data-content="essay">Support this piece ↗</button></div></article></div>
+    </section>
+    <details id="settings" class="panel settings"><summary>Creator controls & demo assumptions <span>＋</span></summary>
+      <p>A verified creator can adjust their three fee rates within protocol bounds. Claiming never gives access to holders’ backing.</p>
+      <label class="check"><input id="claimed" type="checkbox"> Simulate a verified creator claim</label>
+      <form id="rates-form"><div class="rates"><label>Mint fee %<input name="mint" type="number" min="0" max="10" step="0.01" value="6.9" required></label><label>Redemption fee %<input name="redeem" type="number" min="0" max="10" step="0.01" value="6.9" required></label><label>Transfer fee %<input name="transfer" type="number" min="0" max="10" step="0.01" value="6.9" required></label></div><button id="save-rates" disabled>Schedule new rates</button><button type="button" id="advance-epoch">Advance demo epoch</button><p id="rate-status" role="status">Epoch 100 · original 6.9% rates active</p></form>
+      <p class="fine">Illustrative allocation: 90% of fees burned; 5% reserved for setup while a sponsor balance is due; the remainder funds curation. The 10% rate ceiling, split, coordinated two-epoch change window and 1 SOL setup estimate are demo assumptions. Actual rent, stake funding and protocol constraints must be quoted from the chain.</p>
+    </details>
+    <footer><span>common · creator economy concept</span><span>One creator. One Sanctum pool. One transferable stake.</span><button id="reset">Reset demo</button></footer>
+  </main>
+</body>
+</html>
