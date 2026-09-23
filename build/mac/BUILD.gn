@@ -316,7 +316,6 @@ if (is_official_build && !skip_signing) {
 action("package") {
   outputs = [
     dmg_path,
-    "$packaged_basename.pkg",
     zip_path,
   ]
   deps = [
@@ -346,6 +345,7 @@ action("package") {
 
     # sign_chrome.py requires --identity even when signing is skipped.
     "--identity=$mac_signing_identifier",
+    "--keychain=$keychain_db",
     "--installer-identity=$installer_identity",
   ]
   if (!is_official_build) {
@@ -359,14 +359,25 @@ action("package") {
   }
   if (notarize) {
     args += [ "--notarize" ]
-    notary_args = [
-      "--apple-id",
-      notary_user,
-      "--password",
-      notary_password,
-      "--team-id",
-      chrome_mac_team_id,
-    ]
+    if (notary_api_key_path != "") {
+      notary_args = [
+        "--key",
+        notary_api_key_path,
+        "--key-id",
+        notary_api_key_id,
+        "--issuer",
+        notary_api_issuer,
+      ]
+    } else {
+      notary_args = [
+        "--apple-id",
+        notary_user,
+        "--password",
+        notary_password,
+        "--team-id",
+        chrome_mac_team_id,
+      ]
+    }
     foreach(arg, notary_args) {
       args += [ "--notary-arg=$arg" ]
     }

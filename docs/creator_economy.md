@@ -325,3 +325,34 @@ setup sponsor budget and recovery terms, creator claim proofs, curator reward
 rules, controller governance, and native runner provisioning. Production work
 also needs deployed-pool compatibility tests, backend/Privy implementation,
 on-chain controller implementation and funded flows in the three client types.
+
+## FairCreators release packaging
+
+The private `kekloldyormarket/creator-browser-ci` repository runs
+`release.yml` against an immutable reviewed source SHA. These jobs use Release
+configuration and produce the actual native application, not the prototype or
+simulator. The artifact directory includes SHA256SUMS and release-manifest.json.
+Missing or empty platform artifacts fail the job.
+
+| Target | Artifact | Distribution |
+| --- | --- | --- |
+| iOS arm64 device | IPA | App Store Connect export, Apple Distribution signing |
+| Android arm64 | AAB and APK | Persistent upload key; AAB for Play App Signing |
+| macOS arm64 | DMG and ZIP | Developer ID signed, notarized and stapled |
+| Windows x64 | installer EXE | Website distribution; currently unsigned |
+| Linux x64 | DEB and RPM | Website distribution; currently unsigned |
+
+Apple jobs explicitly select Xcode 26.3. Windows installs the Chromium-required
+28000 SDK if absent. Signing credentials are imported into temporary job storage,
+verified, and removed in an always-run cleanup step; they are not source assets
+or release artifacts. iOS uses the FairCreators bundle ID and app group; a
+successful archive and export, not merely a credential check, proves provisioning.
+The iOS build number includes the workflow run number and attempt.
+
+FairCreators has its own product names, application identifiers, Windows install
+registration, and generated native icons. Regenerate the icon renditions from
+`components/creator_economy/branding/mark.svg` with `generate-icons.mjs` and Sharp.
+macOS release jobs compile a fresh Assets.car with actool before source setup.
+Upstream automatic updates are disabled for these distributions. Further in-app
+service branding remains separate from native app identity. Store listings,
+review approval, and a Windows signing certificate are not produced by compiling.

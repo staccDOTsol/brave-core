@@ -58,7 +58,7 @@ TEST(InstallDetailsTest, GetClientStateKeyPath) {
   FakeInstallDetails details;
 #if defined(OFFICIAL_BUILD)
   EXPECT_THAT(details.GetClientStateKeyPath(),
-              StrEq(L"Software\\BraveSoftware\\Update\\ClientState\\testguid"));
+              StrEq(L"Software\\FairCreators\\Update\\ClientState\\testguid"));
 #else
     EXPECT_THAT(details.GetClientStateKeyPath(),
                 StrEq(std::wstring(L"Software\\").append(kProductPathName)));
@@ -70,7 +70,7 @@ TEST(InstallDetailsTest, GetClientStateMediumKeyPath) {
 #if defined(OFFICIAL_BUILD)
     EXPECT_THAT(
         details.GetClientStateMediumKeyPath(),
-        StrEq(L"Software\\BraveSoftware\\Update\\ClientStateMedium\\testguid"));
+        StrEq(L"Software\\FairCreators\\Update\\ClientStateMedium\\testguid"));
 #else
     EXPECT_THAT(details.GetClientStateKeyPath(),
                 StrEq(std::wstring(L"Software\\").append(kProductPathName)));

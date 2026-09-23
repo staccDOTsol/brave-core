@@ -74,56 +74,56 @@ struct TestData {
 #if BUILDFLAG(IS_BRAVE_ORIGIN_BRANDED)
 constexpr TestData kTestData[] = {
     {
-        L"C:\\Program Files (x86)\\BraveSoftware\\Brave-Origin\\Application"
+        L"C:\\Program Files (x86)\\FairCreators\\FairCreators-Origin\\Application"
         L"\\brave.exe",
         STABLE_INDEX,
         true,
         L"",
     },
     {
-        L"C:\\Users\\user\\AppData\\Local\\BraveSoftware\\Brave-Origin"
+        L"C:\\Users\\user\\AppData\\Local\\FairCreators\\FairCreators-Origin"
         L"\\Application\\brave.exe",
         STABLE_INDEX,
         false,
         L"",
     },
     {
-        L"C:\\Program Files (x86)\\BraveSoftware\\Brave-Origin-Beta"
+        L"C:\\Program Files (x86)\\FairCreators\\FairCreators-Origin-Beta"
         L"\\Application\\brave.exe",
         BETA_INDEX,
         true,
         L"beta",
     },
     {
-        L"C:\\Users\\user\\AppData\\Local\\BraveSoftware\\Brave-Origin-Beta"
+        L"C:\\Users\\user\\AppData\\Local\\FairCreators\\FairCreators-Origin-Beta"
         L"\\Application\\brave.exe",
         BETA_INDEX,
         false,
         L"beta",
     },
     {
-        L"C:\\Program Files (x86)\\BraveSoftware\\Brave-Origin-Dev"
+        L"C:\\Program Files (x86)\\FairCreators\\FairCreators-Origin-Dev"
         L"\\Application\\brave.exe",
         DEV_INDEX,
         true,
         L"dev",
     },
     {
-        L"C:\\Users\\user\\AppData\\Local\\BraveSoftware\\Brave-Origin-Dev"
+        L"C:\\Users\\user\\AppData\\Local\\FairCreators\\FairCreators-Origin-Dev"
         L"\\Application\\brave.exe",
         DEV_INDEX,
         false,
         L"dev",
     },
     {
-        L"C:\\Users\\user\\AppData\\Local\\BraveSoftware\\Brave-Origin-Nightly"
+        L"C:\\Users\\user\\AppData\\Local\\FairCreators\\FairCreators-Origin-Nightly"
         L"\\Application\\brave.exe",
         NIGHTLY_INDEX,
         false,
         L"nightly",
     },
     {
-        L"C:\\Users\\user\\AppData\\Local\\BraveSoftware\\Brave-Origin-Nightly"
+        L"C:\\Users\\user\\AppData\\Local\\FairCreators\\FairCreators-Origin-Nightly"
         L"\\Application\\brave.exe",
         NIGHTLY_INDEX,
         false,
@@ -133,42 +133,42 @@ constexpr TestData kTestData[] = {
 #else   // !IS_BRAVE_ORIGIN_BRANDED
 constexpr TestData kTestData[] = {
     {
-        L"C:\\Program Files (x86)\\BraveSoftware\\Brave-Browser\\Application"
+        L"C:\\Program Files (x86)\\FairCreators\\FairCreators-Browser\\Application"
         L"\\brave.exe",
         STABLE_INDEX, true, L"",
     },
     {
-        L"C:\\Users\\user\\AppData\\Local\\BraveSoftware\\Brave-Browser"
+        L"C:\\Users\\user\\AppData\\Local\\FairCreators\\FairCreators-Browser"
         L"\\Application\\brave.exe",
         STABLE_INDEX, false, L"",
     },
     {
-        L"C:\\Program Files (x86)\\BraveSoftware\\Brave-Browser-Beta"
+        L"C:\\Program Files (x86)\\FairCreators\\FairCreators-Browser-Beta"
         L"\\Application\\brave.exe",
         BETA_INDEX, true, L"beta",
     },
     {
-        L"C:\\Users\\user\\AppData\\Local\\BraveSoftware\\Brave-Browser-Beta"
+        L"C:\\Users\\user\\AppData\\Local\\FairCreators\\FairCreators-Browser-Beta"
         L"\\Application\\brave.exe",
         BETA_INDEX, false, L"beta",
     },
     {
-        L"C:\\Program Files (x86)\\BraveSoftware\\Brave-Browser-Dev"
+        L"C:\\Program Files (x86)\\FairCreators\\FairCreators-Browser-Dev"
         L"\\Application\\brave.exe",
         DEV_INDEX, true, L"dev",
     },
     {
-        L"C:\\Users\\user\\AppData\\Local\\BraveSoftware\\Brave-Browser-Dev"
+        L"C:\\Users\\user\\AppData\\Local\\FairCreators\\FairCreators-Browser-Dev"
         L"\\Application\\brave.exe",
         DEV_INDEX, false, L"dev",
     },
     {
-        L"C:\\Users\\user\\AppData\\Local\\BraveSoftware\\Brave-Browser-Nightly"
+        L"C:\\Users\\user\\AppData\\Local\\FairCreators\\FairCreators-Browser-Nightly"
         L"\\Application\\brave.exe",
         NIGHTLY_INDEX, false, L"nightly",
     },
     {
-        L"C:\\Users\\user\\AppData\\Local\\BraveSoftware\\Brave-Browser-Nightly"
+        L"C:\\Users\\user\\AppData\\Local\\FairCreators\\FairCreators-Browser-Nightly"
         L"\\Application\\brave.exe",
         NIGHTLY_INDEX, false, L"nightly",
     },
@@ -177,14 +177,14 @@ constexpr TestData kTestData[] = {
 #else   // OFFICIAL_BUILD
 constexpr TestData kTestData[] = {
     {
-        L"C:\\Program Files (x86)\\BraveSoftware\\Brave-Browser-Development"
+        L"C:\\Program Files (x86)\\FairCreators\\FairCreators-Browser-Development"
         L"\\Application\\brave.exe",
         DEVELOPER_INDEX,
         true,
         L"",
     },
     {
-        L"C:\\Users\\user\\AppData\\Local\\BraveSoftware\\Brave-Browser-"
+        L"C:\\Users\\user\\AppData\\Local\\FairCreators\\FairCreators-Browser-"
         L"Development\\Application\\brave.exe",
         DEVELOPER_INDEX,
         false,
@@ -243,7 +243,7 @@ class MakeProductDetailsTest : public testing::TestWithParam<TestData> {
   std::wstring GetClientStateKeyPath() {
     std::wstring result(L"Software\\");
 #if defined(OFFICIAL_BUILD)
-      result.append(L"BraveSoftware\\Update\\ClientState\\");
+      result.append(L"FairCreators\\Update\\ClientState\\");
       result.append(UNSAFE_TODO(kInstallModes[test_data().index]).app_guid);
 #else
       result.append(kProductPathName);

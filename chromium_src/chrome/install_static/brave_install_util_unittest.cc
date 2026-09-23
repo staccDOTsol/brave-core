@@ -296,14 +296,14 @@ class InstallStaticUtilTest
 #if defined(OFFICIAL_BUILD)
 #if BUILDFLAG(IS_BRAVE_ORIGIN_BRANDED)
     static constexpr wchar_t kPolicyKey[] =
-        L"Software\\Policies\\BraveSoftware\\Brave-Origin";
+        L"Software\\Policies\\FairCreators\\FairCreators-Origin";
 #else
     static constexpr wchar_t kPolicyKey[] =
-        L"Software\\Policies\\BraveSoftware\\Brave-Browser";
+        L"Software\\Policies\\FairCreators\\FairCreators-Browser";
 #endif
 #else
     static constexpr wchar_t kPolicyKey[] =
-        L"Software\\Policies\\BraveSoftware\\Brave-Browser-Development";
+        L"Software\\Policies\\FairCreators\\FairCreators-Browser-Development";
 #endif
 
     ASSERT_EQ(ERROR_SUCCESS,
@@ -319,7 +319,7 @@ class InstallStaticUtilTest
 
     std::wstring result(L"Software\\");
 #if defined(OFFICIAL_BUILD)
-      result.append(L"BraveSoftware\\Update\\ClientState");
+      result.append(L"FairCreators\\Update\\ClientState");
       if (medium)
         result.append(L"Medium");
       result.push_back(L'\\');
@@ -342,29 +342,29 @@ TEST_P(InstallStaticUtilTest, GetChromeInstallSubDirectory) {
 #if defined(OFFICIAL_BUILD)
 #if BUILDFLAG(IS_BRAVE_ORIGIN_BRANDED)
   // The directory strings for the brand's install modes; parallel to
-  // kInstallModes. Brave Origin uses "Brave-Origin" as the product path name
-  // instead of "Brave-Browser" to allow side-by-side installation.
+  // kInstallModes. Brave Origin uses "FairCreators-Origin" as the product path name
+  // instead of "FairCreators-Browser" to allow side-by-side installation.
   static constexpr const wchar_t* kInstallDirs[] = {
-      L"BraveSoftware\\Brave-Origin",
-      L"BraveSoftware\\Brave-Origin-Beta",
-      L"BraveSoftware\\Brave-Origin-Dev",
-      L"BraveSoftware\\Brave-Origin-Nightly",
+      L"FairCreators\\FairCreators-Origin",
+      L"FairCreators\\FairCreators-Origin-Beta",
+      L"FairCreators\\FairCreators-Origin-Dev",
+      L"FairCreators\\FairCreators-Origin-Nightly",
   };
 #else
   // The directory strings for the brand's install modes; parallel to
   // kInstallModes.
   static constexpr const wchar_t* kInstallDirs[] = {
-      L"BraveSoftware\\Brave-Browser",
-      L"BraveSoftware\\Brave-Browser-Beta",
-      L"BraveSoftware\\Brave-Browser-Dev",
-      L"BraveSoftware\\Brave-Browser-Nightly",
+      L"FairCreators\\FairCreators-Browser",
+      L"FairCreators\\FairCreators-Browser-Beta",
+      L"FairCreators\\FairCreators-Browser-Dev",
+      L"FairCreators\\FairCreators-Browser-Nightly",
   };
 #endif  // BUILDFLAG(IS_BRAVE_ORIGIN_BRANDED)
 #else
   // The directory strings for the brand's install modes; parallel to
   // kInstallModes.
   static constexpr const wchar_t* kInstallDirs[] = {
-      L"BraveSoftware\\Brave-Browser-Development",
+      L"FairCreators\\FairCreators-Browser-Development",
   };
 #endif
   static_assert(std::size(kInstallDirs) == NUM_INSTALL_MODES,
@@ -377,28 +377,28 @@ TEST_P(InstallStaticUtilTest, GetRegistryPath) {
 #if defined(OFFICIAL_BUILD)
 #if BUILDFLAG(IS_BRAVE_ORIGIN_BRANDED)
   // The registry path strings for the brand's install modes; parallel to
-  // kInstallModes. Brave Origin uses "Brave-Origin" as the product path name.
+  // kInstallModes. Brave Origin uses "FairCreators-Origin" as the product path name.
   static constexpr const wchar_t* kRegistryPaths[] = {
-      L"Software\\BraveSoftware\\Brave-Origin",
-      L"Software\\BraveSoftware\\Brave-Origin-Beta",
-      L"Software\\BraveSoftware\\Brave-Origin-Dev",
-      L"Software\\BraveSoftware\\Brave-Origin-Nightly",
+      L"Software\\FairCreators\\FairCreators-Origin",
+      L"Software\\FairCreators\\FairCreators-Origin-Beta",
+      L"Software\\FairCreators\\FairCreators-Origin-Dev",
+      L"Software\\FairCreators\\FairCreators-Origin-Nightly",
   };
 #else
   // The registry path strings for the brand's install modes; parallel to
   // kInstallModes.
   static constexpr const wchar_t* kRegistryPaths[] = {
-      L"Software\\BraveSoftware\\Brave-Browser",
-      L"Software\\BraveSoftware\\Brave-Browser-Beta",
-      L"Software\\BraveSoftware\\Brave-Browser-Dev",
-      L"Software\\BraveSoftware\\Brave-Browser-Nightly",
+      L"Software\\FairCreators\\FairCreators-Browser",
+      L"Software\\FairCreators\\FairCreators-Browser-Beta",
+      L"Software\\FairCreators\\FairCreators-Browser-Dev",
+      L"Software\\FairCreators\\FairCreators-Browser-Nightly",
   };
 #endif  // BUILDFLAG(IS_BRAVE_ORIGIN_BRANDED)
 #else
   // The registry path strings for the brand's install modes; parallel to
   // kInstallModes.
   static constexpr const wchar_t* kRegistryPaths[] = {
-      L"Software\\BraveSoftware\\Brave-Browser-Development",
+      L"Software\\FairCreators\\FairCreators-Browser-Development",
   };
 #endif
   static_assert(std::size(kRegistryPaths) == NUM_INSTALL_MODES,
@@ -411,30 +411,30 @@ TEST_P(InstallStaticUtilTest, GetUninstallRegistryPath) {
 #if defined(OFFICIAL_BUILD)
 #if BUILDFLAG(IS_BRAVE_ORIGIN_BRANDED)
   // The uninstall registry path strings for the brand's install modes; parallel
-  // to kInstallModes. Brave Origin uses "Brave-Origin" as the product path
+  // to kInstallModes. Brave Origin uses "FairCreators-Origin" as the product path
   // name.
   static constexpr const wchar_t* kUninstallRegistryPaths[] = {
       L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  // (cont'd)
-      L"BraveSoftware Brave-Origin",
+      L"FairCreators FairCreators-Origin",
       L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  // (cont'd)
-      L"BraveSoftware Brave-Origin-Beta",
+      L"FairCreators FairCreators-Origin-Beta",
       L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  // (cont'd)
-      L"BraveSoftware Brave-Origin-Dev",
+      L"FairCreators FairCreators-Origin-Dev",
       L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  // (cont'd)
-      L"BraveSoftware Brave-Origin-Nightly",
+      L"FairCreators FairCreators-Origin-Nightly",
   };
 #else
   // The uninstall registry path strings for the brand's install modes; parallel
   // to kInstallModes.
   static constexpr const wchar_t* kUninstallRegistryPaths[] = {
       L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  // (cont'd)
-      L"BraveSoftware Brave-Browser",
+      L"FairCreators FairCreators-Browser",
       L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  // (cont'd)
-      L"BraveSoftware Brave-Browser-Beta",
+      L"FairCreators FairCreators-Browser-Beta",
       L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  // (cont'd)
-      L"BraveSoftware Brave-Browser-Dev",
+      L"FairCreators FairCreators-Browser-Dev",
       L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  // (cont'd)
-      L"BraveSoftware Brave-Browser-Nightly",
+      L"FairCreators FairCreators-Browser-Nightly",
   };
 #endif  // BUILDFLAG(IS_BRAVE_ORIGIN_BRANDED)
 #else
@@ -442,7 +442,7 @@ TEST_P(InstallStaticUtilTest, GetUninstallRegistryPath) {
   // kInstallModes.
   static constexpr const wchar_t* kUninstallRegistryPaths[] = {
       L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  // (cont'd)
-      L"BraveSoftware Brave-Browser-Development",
+      L"FairCreators FairCreators-Browser-Development",
   };
 #endif
   static_assert(std::size(kUninstallRegistryPaths) == NUM_INSTALL_MODES,
@@ -457,18 +457,18 @@ TEST_P(InstallStaticUtilTest, GetAppGuid) {
 #if BUILDFLAG(IS_BRAVE_ORIGIN_BRANDED)
   // The app guids for the brand's install modes; parallel to kInstallModes.
   static constexpr const wchar_t* kAppGuids[] = {
-      L"{F1EF32DE-F987-4289-81D2-6C4780027F9B}",  // Brave-Origin.
-      L"{56DA94FD-D872-416B-BFC4-1D7011DA7473}",  // Brave-Origin-Beta.
-      L"{716D6A4A-D071-47A8-AC64-DBDE3EE3797B}",  // Brave-Origin-Dev.
-      L"{50474E96-9CD2-4BC8-B0A7-0D4B6EF2E709}",  // Brave-Origin-Nightly.
+      L"{C24AB54E-6E36-500C-93FD-EBA3FF444776}",  // Brave-Origin.
+      L"{EB5B0080-FD1E-5508-9CBA-08319E23791B}",  // Brave-Origin-Beta.
+      L"{F31E419F-3AC1-50ED-AD05-85F55DD428BC}",  // Brave-Origin-Dev.
+      L"{D1014F0B-8F23-5288-B8D8-1A50B2D5068B}",  // Brave-Origin-Nightly.
   };
 #else
   // The app guids for the brand's install modes; parallel to kInstallModes.
   static constexpr const wchar_t* kAppGuids[] = {
-      L"{AFE6A462-C574-4B8A-AF43-4CC60DF4563B}",  // Brave-Browser.
-      L"{103BD053-949B-43A8-9120-2E424887DE11}",  // Brave-Browser-Beta.
-      L"{CB2150F2-595F-4633-891A-E39720CE0531}",  // Brave-Browser-Dev.
-      L"{C6CB981E-DB30-4876-8639-109F8933582C}",  // Brave-Browser-Nightly.
+      L"{B3232963-CEE1-573D-B753-C20DED7621CD}",  // Brave-Browser.
+      L"{B79215D8-7885-5711-A817-DD92706DEBB0}",  // Brave-Browser-Beta.
+      L"{84A9F9AD-D797-5E2B-B1CC-3AFD62C73C32}",  // Brave-Browser-Dev.
+      L"{372F3CB2-3830-52F6-BA0E-674F86F5F3D1}",  // Brave-Browser-Nightly.
   };
 #endif  // BUILDFLAG(IS_BRAVE_ORIGIN_BRANDED)
   static_assert(std::size(kAppGuids) == NUM_INSTALL_MODES,
@@ -487,21 +487,21 @@ TEST_P(InstallStaticUtilTest, GetBaseAppId) {
 #if BUILDFLAG(IS_BRAVE_ORIGIN_BRANDED)
   // The base app ids for the brand's install modes; parallel to kInstallModes.
   static constexpr const wchar_t* kBaseAppIds[] = {
-      L"BraveOrigin",
-      L"BraveOriginBeta",
-      L"BraveOriginDev",
-      L"BraveOriginNightly",
+      L"FairCreatorsOrigin",
+      L"FairCreatorsOriginBeta",
+      L"FairCreatorsOriginDev",
+      L"FairCreatorsOriginNightly",
   };
 #else
   // The base app ids for the brand's install modes; parallel to kInstallModes.
   static constexpr const wchar_t* kBaseAppIds[] = {
-      L"Brave", L"BraveBeta", L"BraveDev", L"BraveNightly",
+      L"FairCreators", L"FairCreatorsBeta", L"FairCreatorsDev", L"FairCreatorsNightly",
   };
 #endif  // BUILDFLAG(IS_BRAVE_ORIGIN_BRANDED)
 #else
   // The base app ids for the brand's install modes; parallel to kInstallModes.
   static constexpr const wchar_t* kBaseAppIds[] = {
-      L"BraveDevelopment",
+      L"FairCreatorsDevelopment",
   };
 #endif
   static_assert(std::size(kBaseAppIds) == NUM_INSTALL_MODES,
@@ -537,10 +537,10 @@ TEST_P(InstallStaticUtilTest, GetToastActivatorClsid) {
 
   // The string representation of the CLSIDs above.
   static constexpr const wchar_t* kToastActivatorClsidsString[] = {
-      L"{8A7B6C5D-4E3F-2A1B-9C8D-7E6F5A4B3C2D}",  // Brave-Origin.
-      L"{3C4D5E6F-7A8B-9C0D-1E2F-3A4B5C6D7E8F}",  // Brave-Origin-Beta.
-      L"{6F7A8B9C-0D1E-2F3A-4B5C-6D7E8F9A0B1C}",  // Brave-Origin-Dev.
-      L"{9C0D1E2F-3A4B-5C6D-7E8F-9A0B1C2D3E4F}",  // Brave-Origin-Nightly.
+      L"{7D1E3EA4-F226-57F5-ACEA-C1F9F24CAEDC}",  // Brave-Origin.
+      L"{2FC5A035-321E-54E0-AD66-9601A5A67E3C}",  // Brave-Origin-Beta.
+      L"{BFB0762E-984B-5C26-9969-EF30F6D08AD1}",  // Brave-Origin-Dev.
+      L"{6F9A1978-7838-5FB9-B519-886E82E822C7}",  // Brave-Origin-Nightly.
   };
 #else
   // The toast activator CLSIDs for the brand's install modes; parallel to
@@ -570,10 +570,10 @@ TEST_P(InstallStaticUtilTest, GetToastActivatorClsid) {
 
   // The string representation of the CLSIDs above.
   static constexpr const wchar_t* kToastActivatorClsidsString[] = {
-      L"{06C9646D-2807-44C0-97D2-6DA0DB623DB4}",  // Brave-Browser.
-      L"{9560028D-0CCA-49F0-8D47-EF22BBC40BA7}",  // Brave-Browser-Beta.
-      L"{20B22981-F63A-47A6-A547-691CC94CAEE0}",  // Brave-Browser-Dev.
-      L"{F2EDBC59-7217-4DA5-A259-0302DA6A00E1}",  // Brave-Browser-Nightly.
+      L"{E03E0D9F-1C0E-5BBE-9B46-DA42B178E127}",  // Brave-Browser.
+      L"{645E9E0C-2394-51A3-AE41-55E526DAE332}",  // Brave-Browser-Beta.
+      L"{1F02B1FF-20ED-50C3-94F2-E25A44830713}",  // Brave-Browser-Dev.
+      L"{27CAAC9F-DFE9-5B4A-BB30-937EC381E990}",  // Brave-Browser-Nightly.
   };
 #endif  // BUILDFLAG(IS_BRAVE_ORIGIN_BRANDED)
 #else
@@ -589,7 +589,7 @@ TEST_P(InstallStaticUtilTest, GetToastActivatorClsid) {
 
   // The string representation of the CLSIDs above.
   static constexpr const wchar_t* kToastActivatorClsidsString[] = {
-      L"{EB41C6E8-BA35-4C06-96E8-6F30F18CA55C}"  // Brave-Browser-Development.
+      L"{841C5489-0A17-519C-AC79-1542B58723D6}"  // Brave-Browser-Development.
   };
 #endif
   static_assert(std::size(kToastActivatorClsids) == NUM_INSTALL_MODES,
