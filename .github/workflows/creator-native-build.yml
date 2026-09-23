@@ -22,6 +22,10 @@ on:
         description: Check runner capacity without downloading Chromium or compiling
         type: boolean
         default: false
+      reclaim_dotnet:
+        description: Remove unused .NET SDK on a disposable GitHub-hosted Linux runner (requires approval)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -51,6 +55,19 @@ jobs:
       - uses: actions/setup-node@v7.0.0
         with:
           node-version: '24'
+      - name: Report Linux disk usage
+        if: runner.os == 'Linux'
+        run: |
+          df -h .
+          du -sh /usr/share/dotnet || true
+      - name: Reclaim unused .NET SDK on a disposable Linux runner
+        if: inputs.reclaim_dotnet
+        shell: bash
+        run: |
+          test "$RUNNER_ENVIRONMENT" = "github-hosted"
+          test "$RUNNER_OS" = "Linux"
+          sudo rm -rf -- /usr/share/dotnet
+          df -h .
       - name: Check runner capacity before downloading Chromium
         run: node components/creator_economy/ci/native-build.mjs --preflight
       - name: Expand source checkout
