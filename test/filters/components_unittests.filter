@@ -306,12 +306,20 @@
 -SyncToSigninMigrationUndoTest.*
 -UnifiedConsentServiceTest.ReplaceSync_*
 
-
 # These tests fail because we override VariationsIdsProvider's method
 # GetClientDataHeaders to return nullptr, so the X-Client-Data header the tests
 # expect to find is never added.
 -ContextualSearchDelegateImplTest.DiscourseContextHeaderRemovedOnCrossOriginRedirect_GoogleDSE
 -LogoServiceImplTest.IncludesVariationsHeaderWhenDSEIsGoogle
+
+# brave/build/config/locales.gni re-enables desktop UI support for az, bs, ka,
+# kk, km, lo, mk, mn, my, si, sq, uz (upstream's `extended_locales` excludes
+# them from desktop). Upstream never exercises these locales in this test on
+# desktop as a result. But third_party/icu/filters/common.json (unmodified by
+# us) still strips full calendar/date data for exactly these locales to
+# save binary size, since upstream assumes desktop never needs it. So ICU falls
+# back to the root pattern ("M12 7") for these 12 locales only.
+-DateInfo.GetIcuDate_LocalizedPattern_AllPlatformLocales
 
 # Tests below this point have not been diagnosed or had issues created yet.
 -AccountInvestigatorTest.*
