@@ -1,19 +1,23 @@
 # Creator economy foundation
 
 Owner: the creator-browser fork. This directory contains a local, dependency-free
-accounting and interaction prototype. It is not wired into Brave or a deployed
-Solana program.
+accounting and interaction prototype. Brave's shared detector exposes a creator
+context bridge, but the dashboard is not yet a native wallet surface and no
+creator controller has been deployed.
 
 - `prototype/economics.mjs`: integer quotes, fee allocation and pool transitions.
 - `prototype/bootstrap.mjs`: creator-scoped setup and action idempotency model.
 - `prototype/model.test.mjs`: conservation, rounding and retry tests.
+- `prototype/creator-context.test.mjs`: tests the shared Brave detection bridge,
+  stable identities, unresolved Twitch aliases and content candidates.
 - `prototype/index.html`: responsive creator dashboard inspired by stacsol.app.
 - [Design and integration contract](../../docs/creator_economy.md).
 
-From this directory, with Node 22 or newer:
+From this directory, with Node 24.16 or newer:
 
 ```sh
 node --test prototype/model.test.mjs
+node --test prototype/creator-context.test.mjs
 node prototype/serve.mjs
 ```
 

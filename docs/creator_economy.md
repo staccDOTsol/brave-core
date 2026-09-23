@@ -4,6 +4,11 @@ Status: interaction and accounting prototype, September 23, 2026. Native wallet
 integration, deployed controller, identity verification and payment services
 remain implementation work. The prototype does not submit transactions.
 
+The shared Brave creator-detection scripts now expose an explicit
+`braveCreatorEconomy.detectContext()` bridge for support surfaces. It returns
+namespace candidates and separate content candidates; it does not send them to
+a backend or initiate a payment. Native UI consumers remain to be connected.
+
 ## Product decisions
 
 - Desktop, Android and iOS share the protocol and identity model.
@@ -170,6 +175,14 @@ PDAs. Public metadata alone does not prove ownership, original authorship or
 endorsement. Claims require the appropriate OAuth/provider proof or domain
 challenge, with explicit conflict resolution for recycled handles.
 
+The bridge recognizes the existing YouTube, X/Twitter, Reddit, Vimeo and Twitch
+detector formats. Twitch's current detector yields a mutable login name, so its
+context has a null namespace until the backend resolves the immutable provider
+ID. Detected content-to-creator associations remain unverified until checked by
+the service; parsing a video/post URL is not proof of authorship. Navigation
+during detection invalidates the result. Ordinary website/domain detection still
+needs the native publisher-service adapter and domain claim flow.
+
 Privy supplies wallet execution. A database supplies creator identities, user
 accounts, follows, content records, curation events, intent state and accounting.
 Content does not need a separate custodial wallet for every URL.
@@ -227,9 +240,10 @@ program version later; do not use the closed ID as a default live route.
 ## Verification and remote builds
 
 The [prototype README](../components/creator_economy/README.md) has run commands.
-The foundation workflow runs the same accounting and bootstrap tests on Linux,
-macOS and Windows, then publishes a runnable prototype artifact. It does not
-initialize Chromium.
+The foundation workflow runs accounting, bootstrap and shared creator-detection
+tests on Linux, macOS and Windows, then publishes a runnable prototype artifact.
+It does not initialize Chromium. In the artifact, enter `creator_economy` before
+running the README commands; the adjacent detector source is included for tests.
 
 `creator-native-build.yml` is a manual GitHub Actions build recipe for Linux,
 Android arm64, macOS, iOS simulator and Windows. Supply a provisioned runner
