@@ -61,3 +61,11 @@ test('persisted claims and entitlements are discarded; malformed data cannot cra
     assert.deepEqual(readLibrary(value), EMPTY_LIBRARY)
   }
 })
+
+test('query-based article identities survive removal of tracking parameters', () => {
+  const first = contentFromURL('https://example.com/read?id=1&utm_source=test#comments')
+  const second = contentFromURL('https://example.com/read?id=2&fbclid=tracking')
+  assert.equal(first, 'https://example.com/read?id=1')
+  assert.equal(second, 'https://example.com/read?id=2')
+  assert.notEqual(first, second)
+})

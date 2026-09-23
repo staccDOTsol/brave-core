@@ -134,9 +134,21 @@ export function contentFromURL(value: string): string | null {
       ? url.searchParams.get('v')
       : null
   url.hash = ''
-  url.search = ''
-  if (video && /^[A-Za-z0-9_-]{11}$/.test(video))
+  if (video && /^[A-Za-z0-9_-]{11}$/.test(video)) {
+    url.search = ''
     url.searchParams.set('v', video)
+  } else {
+    const tracking: string[] = []
+    url.searchParams.forEach((_value, key) => {
+      if (
+        /^utm_/i.test(key)
+        || ['fbclid', 'gclid', 'igshid'].includes(key.toLowerCase())
+      ) {
+        tracking.push(key)
+      }
+    })
+    for (const key of tracking) url.searchParams.delete(key)
+  }
   return url.href
 }
 

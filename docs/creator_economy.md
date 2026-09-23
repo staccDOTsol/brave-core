@@ -286,7 +286,7 @@ program version later; do not use the closed ID as a default live route.
 ## Verification and remote builds
 
 The [component README](../components/creator_economy/README.md) has run commands.
-The checks workflow runs 30 accounting, referral, bootstrap, detection and
+The checks workflow runs 31 accounting, referral, bootstrap, detection and
 creator-library tests on Linux, macOS and Windows. It type-checks the pure models,
 transpiles the new wallet UI, validates localized resources and parses changed
 Swift files. It does not initialize Chromium or assert that the native browser
