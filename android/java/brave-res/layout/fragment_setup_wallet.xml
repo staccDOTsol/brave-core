@@ -35,6 +35,14 @@
             android:text="@string/defi_secure_storage_text"
             android:textColor="@color/text_secondary" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/creator_wallet_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/brave_wallet_creators_menu" />
+
         <androidx.cardview.widget.CardView
             android:id="@+id/new_wallet_card_view"
             android:layout_width="match_parent"

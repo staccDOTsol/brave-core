@@ -1,10 +1,16 @@
-name: Creator economy foundation
+name: Creator browser checks
 
 on:
   push:
     branches: ['codex/creator-economy-foundation']
     paths:
       - 'components/creator_economy/**'
+      - 'components/brave_wallet_ui/**'
+      - 'components/resources/wallet_strings.grdp'
+      - 'android/java/org/chromium/chrome/browser/crypto_wallet/**'
+      - 'android/java/brave-res/**'
+      - 'ios/brave-ios/Sources/BraveWallet/**'
+      - 'ios/brave-ios/Sources/BraveShared/BraveURLs.swift'
       - 'components/brave_rewards/resources/creator_detection/**'
       - '.github/workflows/creator-economy.yml'
       - '.github/workflows/creator-native-build.yml'
@@ -12,6 +18,12 @@ on:
   pull_request:
     paths:
       - 'components/creator_economy/**'
+      - 'components/brave_wallet_ui/**'
+      - 'components/resources/wallet_strings.grdp'
+      - 'android/java/org/chromium/chrome/browser/crypto_wallet/**'
+      - 'android/java/brave-res/**'
+      - 'ios/brave-ios/Sources/BraveWallet/**'
+      - 'ios/brave-ios/Sources/BraveShared/BraveURLs.swift'
       - 'components/brave_rewards/resources/creator_detection/**'
       - '.github/workflows/creator-economy.yml'
       - '.github/workflows/creator-native-build.yml'
@@ -37,28 +49,31 @@ jobs:
         with:
           sparse-checkout: |
             components/creator_economy
+            components/brave_wallet_ui
+            components/resources
+            android/java/brave-res
+            android/java/org/chromium/chrome/browser/crypto_wallet
+            ios/brave-ios/Sources/BraveWallet
+            ios/brave-ios/Sources/BraveShared
             components/brave_rewards/resources/creator_detection
       - uses: actions/setup-node@v7.0.0
         with:
           node-version: '24'
-      - name: Verify accounting and initialization retries
-        run: node --test components/creator_economy/prototype/model.test.mjs
-      - name: Verify creator identities and content attribution
-        run: node --test components/creator_economy/prototype/creator-context.test.mjs
+      - name: Verify mint referrals, accounting, creator library and detection
+        run: node --test "components/creator_economy/common/*.test.mjs"
+      - name: Type-check creator wallet models
+        working-directory: ${{ runner.temp }}
+        run: npm exec --yes --package=typescript@5.9.3 -- tsc --noEmit --strict --target ES2019 --lib ESNext,DOM --module ESNext --moduleResolution bundler "${{ github.workspace }}/components/creator_economy/common/mint-fees.ts" "${{ github.workspace }}/components/brave_wallet_ui/common/creator-economy/creator-library.ts"
       - name: Type-check the shared Brave detector
         working-directory: ${{ runner.temp }}
         run: npm exec --yes --package=typescript@5.9.3 -- tsc --noEmit --strict --target ES2022 --lib DOM,DOM.Iterable,ES2022 --module ESNext --moduleResolution bundler "${{ github.workspace }}/components/brave_rewards/resources/creator_detection/creator_detection.ts"
-      - name: Check browser module syntax
-        run: node --check components/creator_economy/prototype/app.mjs
+      - name: Transpile creator wallet UI
+        working-directory: ${{ runner.temp }}
+        run: npm exec --yes --package=esbuild@0.25.10 -- esbuild "${{ github.workspace }}/components/brave_wallet_ui/page/screens/creators/creator-hub.tsx" "${{ github.workspace }}/components/brave_wallet_ui/page/screens/creators/creator-hub.style.ts" "${{ github.workspace }}/components/brave_wallet_ui/page/screens/creators/creator-hub.stories.tsx" --outdir=creator-ui-syntax --target=es2019 --format=esm
+      - name: Parse Android resources and localized wallet strings
+        run: python3 components/creator_economy/ci/check-resources.py
+      - name: Parse native iOS changes
+        if: runner.os == 'macOS'
+        run: swiftc -frontend -parse ios/brave-ios/Sources/BraveWallet/Panels/WalletPanelView.swift ios/brave-ios/Sources/BraveWallet/WalletStrings.swift ios/brave-ios/Sources/BraveShared/BraveURLs.swift
       - name: Check remote build script syntax
         run: node --check components/creator_economy/ci/native-build.mjs
-      - name: Save runnable prototype
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v7.0.1
-        with:
-          name: creator-economy-prototype
-          path: |
-            components/creator_economy/
-            components/brave_rewards/resources/creator_detection/
-          retention-days: 14
-          if-no-files-found: error

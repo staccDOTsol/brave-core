@@ -32,9 +32,10 @@ test('mint conserves backing and issued shares, with setup paid from fees', () =
   const q = quoteMint(pool, 100n * UNIT, config, true)
   assert.equal(q.gross, 80n * UNIT)
   assert.equal(q.received, 74480000000n)
-  assert.equal(q.fee, q.split.burn + q.split.setup + q.split.curation)
+  assert.equal(q.fee, q.split.burn + q.split.setup + q.split.curation
+    + q.split.creator + q.split.deployer)
   assert.equal(q.next.supply - pool.supply,
-    q.received + q.split.setup + q.split.curation)
+    q.received + q.split.setup + q.split.curation + q.split.creator + q.split.deployer)
   assert.equal(q.next.backing - pool.backing, 100n * UNIT)
   assert.ok(q.next.backing * pool.supply >= pool.backing * q.next.supply)
 })
@@ -42,7 +43,8 @@ test('mint conserves backing and issued shares, with setup paid from fees', () =
 test('a first deposit creates backing and claim together', () => {
   const q = quoteMint({ backing: 0n, supply: 0n }, UNIT, config, true)
   assert.equal(q.next.backing, UNIT)
-  assert.equal(q.next.supply, q.received + q.split.curation + q.split.setup)
+  assert.equal(q.next.supply, q.received + q.split.curation + q.split.setup
+    + q.split.creator + q.split.deployer)
   assert.throws(() => quoteMint({ backing: UNIT, supply: 0n }, UNIT, config))
   assert.throws(() => quoteMint(pool, 1n, config))
 })
@@ -50,6 +52,8 @@ test('a first deposit creates backing and claim together', () => {
 test('redemption distinguishes principal burn from fee burn', () => {
   const q = quoteRedeem(pool, 10n * UNIT, config)
   assert.equal(q.principalBurn, 9310000000n)
+  assert.equal(q.split.creator, 0n)
+  assert.equal(q.split.deployer, 0n)
   assert.equal(q.received, 11637500000n)
   assert.equal(pool.backing - q.next.backing, q.received)
   assert.equal(pool.supply - q.next.supply, q.principalBurn + q.split.burn)
@@ -59,6 +63,8 @@ test('redemption distinguishes principal burn from fee burn', () => {
 test('withholding is not a burn until settlement', () => {
   const q = quoteTransfer(pool, 10n * UNIT, config)
   assert.equal(q.received + q.fee, 10n * UNIT)
+  assert.equal(q.split.creator, 0n)
+  assert.equal(q.split.deployer, 0n)
   assert.equal(q.beforeSettlement.supply, pool.supply)
   assert.equal(q.next.backing, pool.backing)
   assert.equal(pool.supply - q.next.supply, q.split.burn)

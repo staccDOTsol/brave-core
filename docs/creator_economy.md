@@ -1,13 +1,15 @@
 # Creator economy: first funded interaction
 
-Status: interaction and accounting prototype, September 23, 2026. Native wallet
-integration, deployed controller, identity verification and payment services
-remain implementation work. The prototype does not submit transactions.
+Status: Brave source integration, September 23, 2026. The shared wallet now has
+`brave://wallet/creators`, desktop navigation, Android panel/setup links and iOS
+panel/setup links. Local following and curation work without seed-wallet setup.
+The screen includes the current mint-referral allocation. It does not create
+financial positions or claim that a bookmarked profile is verified.
 
-The shared Brave creator-detection scripts now expose an explicit
-`braveCreatorEconomy.detectContext()` bridge for support surfaces. It returns
-namespace candidates and separate content candidates; it does not send them to
-a backend or initiate a payment. Native UI consumers remain to be connected.
+The shared Brave creator-detection scripts expose an explicit
+`braveCreatorEconomy.detectContext()` bridge. Native automatic detection, the
+custodial backend, verified claims and the on-chain controller remain to be
+connected. Native binaries have not yet been built.
 
 ## Product decisions
 
@@ -19,8 +21,13 @@ a backend or initiate a payment. Native UI consumers remain to be connected.
   Token-2022 receipt mint. Multiple creator pools may select the same validator.
 - Mint/deposit, redemption and transfer fees each start at **690 basis points**.
   A verified creator may change the three rates within protocol bounds.
-- Most collected fee shares are burned; a separate portion funds curation of
-  individual content items. The exact split and rate ceilings are undecided.
+- On minting only, Sanctum's referral percentage is **50% of the deposit fee**.
+  Half of that referral allocation belongs to the deployer, half to the creator,
+  whether claimed or unclaimed. Each receives 25% of the total mint fee before
+  rounding and payout costs. The remaining manager allocation funds burns,
+  curation and any approved setup recovery.
+- Redemption and transfer fees retain their separate burn/curation policy.
+  Exact burn/curation splits and rate ceilings are undecided.
 - Privy service-controlled Solana wallets support custodial accounts. The
   application operates these wallets; users should see that custody model.
 - A creator can be supported before claiming. The first funded interaction
@@ -77,8 +84,10 @@ unfulfillable quote. A fully self-funded alternative needs sufficient up-front
 SOL and a disclosed quote allocation. The sponsor design is a proposal, not an
 already deployed facility.
 
-The demo uses a **1 SOL illustrative sponsor advance**. While recovery is due,
-its illustrative allocation is 90% burn, 5% recovery and 5% curation. After
+The reference tests use a **1 SOL illustrative sponsor advance**. While recovery is due,
+the manager fee budget has an illustrative allocation of 90% burn, 5% recovery
+and 5% curation. On mints this budget is what remains after the 50% referral
+allocation. After
 recovery the curation share becomes 10%. These figures are not rent estimates or
 approved final economics.
 
@@ -123,8 +132,36 @@ settings. Its updated transfer rate becomes effective two epochs later.
 The inspected Sanctum `Fee::apply` rounds up. All amounts in the reference model
 are integers; the transfer fee also obeys `maximumFee`. User output must be
 computed from actual account deltas for real routes, including any fee-account
-transfer and referral split. The prototype assumes no third-party referral
-diversion and illustrates the final settled transition, not every CPI.
+transfer and referral split. The reference model illustrates the final settled
+transition, not every CPI. The native fee display is an illustration in gross
+pool shares; it is not a SOL deposit quote or proof of an executed allocation.
+
+### Mint-only referral and creator escrow
+
+Set `sol_referral_fee = 50` (and the stake-deposit referral field to 50 when that
+entry path is supported). Sanctum splits the deposit fee and directly mints
+referral shares to the supplied `referrer_fee_info` token account. The mint
+itself is not a Token-2022 transfer. The account must be for this creator pool's
+mint and be controlled by the controller PDA.
+
+The referral percentage is pool state; its destination is supplied per deposit.
+The creator deposit route must supply and validate the expected vault. If this
+must cover every SOL deposit into the pool, configure the pool's SOL deposit
+authority to the controller instead of assuming a client default constrains
+other callers. No such controller is deployed by this patch.
+
+Credit half of the referral allocation to the deployer and half to the creator's
+stable namespace. An indivisible remaining token base unit goes to the creator.
+Unclaimed status never redirects the creator share to the deployer. A verified
+claim binds withdrawal authority to the same namespace and existing escrow;
+claiming does not require transferring the reserved tokens. Actual payout
+transfers or redemptions apply their respective fees and must be quoted net.
+The underlying pool mint authority remains the stake-pool withdraw PDA.
+
+The controller must reconcile finalized mint receipts once, isolate liabilities
+per creator/mint, and preserve creator credits through claims and fee changes.
+Privy wallets sign authorized user actions; they do not replace the on-chain
+escrow ledger or proof of creator ownership.
 
 For backing `A`, outstanding shares `S`, mint input `d`:
 
@@ -132,7 +169,11 @@ For backing `A`, outstanding shares `S`, mint input `d`:
 gross shares g = floor(d × S / A)        (initial issue rate handled separately)
 fee shares f = ceil(g × mint_bps / 10_000)
 user receives g − f
-fee f = burn b + setup recovery r + curator budget c
+referral = floor(f × 50 / 100)
+deployer = floor(referral / 2)
+creator = referral − deployer
+manager = f − referral = burn b + setup recovery r + curator budget c
+fee f = deployer + creator + b + r + c
 new backing = A + d
 new supply = S + g − b
 ```
@@ -170,7 +211,7 @@ aliases. Canonical content key: `(creator_key, provider_content_id)`. Domain
 ownership and individual authorship are separate claims.
 
 Reserve namespaces before funding; derive addresses from a versioned namespace
-digest and controller program ID. The prototype uses logical keys, not real
+digest and controller program ID. The reference model uses logical keys, not real
 PDAs. Public metadata alone does not prove ownership, original authorship or
 endorsement. Claims require the appropriate OAuth/provider proof or domain
 challenge, with explicit conflict resolution for recycled handles.
@@ -204,13 +245,18 @@ social graph; transmit explicit support/curation actions.
 Reuse Brave's creator detection and claim concepts; introduce a distinct creator
 economy service instead of changing the BAT ledger into SOL accounting.
 
-| Surface | Existing integration point | Planned change |
+| Surface | Integration now present | Still required |
 | --- | --- | --- |
-| Shared detection | `components/brave_rewards/resources/creator_detection` | Stable creator/content adapter and explicit support event |
-| Shared wallet | `components/brave_wallet` | Creator service contract, quotes, intent status, custodial account mode |
-| Desktop | Wallet WebUI resources and browser service | Creator panel and position view |
-| Android | `android/java/org/chromium/chrome/browser/crypto_wallet` | Native creator sheet backed by shared service |
-| iOS | `ios/brave-ios/Sources/BraveWallet` | Equivalent SwiftUI flow and service adapter |
+| Shared detection | Typed creator/content candidate bridge | Native caller and identity resolution |
+| Desktop wallet | Root route, navigation, creator/curation library and fee breakdown | Funded positions and authenticated service |
+| Android | Native wallet menu and onboarding button open bundled creator route | Device build and funded service flow |
+| iOS | SwiftUI panel menu and setup button open bundled creator route | Simulator/device build and funded service flow |
+
+The full wallet is already a shared WebUI in this Brave revision. It is bundled
+into the browser through the existing page and panel GN targets. Native menu
+links do not load a hosted website or localhost app. Profile bookmarks and
+curation candidates are local only; persisted data is revalidated and cannot
+supply claimed status or balances.
 
 Existing self-custody keys stay in their existing model. Users enter the new
 custodial account flow explicitly. Privy application secrets remain on the
@@ -239,11 +285,13 @@ program version later; do not use the closed ID as a default live route.
 
 ## Verification and remote builds
 
-The [prototype README](../components/creator_economy/README.md) has run commands.
-The foundation workflow runs accounting, bootstrap and shared creator-detection
-tests on Linux, macOS and Windows, then publishes a runnable prototype artifact.
-It does not initialize Chromium. In the artifact, enter `creator_economy` before
-running the README commands; the adjacent detector source is included for tests.
+The [component README](../components/creator_economy/README.md) has run commands.
+The checks workflow runs 30 accounting, referral, bootstrap, detection and
+creator-library tests on Linux, macOS and Windows. It type-checks the pure models,
+transpiles the new wallet UI, validates localized resources and parses changed
+Swift files. It does not initialize Chromium or assert that the native browser
+compiles. Storybook includes empty and populated creator states. The standalone
+demo server and its HTML/CSS/JS entry points have been retired.
 
 `creator-native-build.yml` is a manual GitHub Actions build recipe for Linux,
 Android arm64, macOS, iOS simulator and Windows. Supply a provisioned runner
@@ -260,8 +308,8 @@ assume a container can supply an Apple toolchain. Native jobs save build records
 and logs; distributable packaging, signing and store publication are subsequent
 milestones. No native compilation runs on the user's computer.
 
-Remaining decisions: validator vote account/policy, fee ceilings and split,
+Remaining decisions: validator vote account/policy, fee ceilings and the remaining burn/curation split,
 setup sponsor budget and recovery terms, creator claim proofs, curator reward
 rules, controller governance, and native runner provisioning. Production work
 also needs deployed-pool compatibility tests, backend/Privy implementation,
-on-chain controller implementation and integration into all three client types.
+on-chain controller implementation and funded flows in the three client types.

@@ -125,7 +125,15 @@ const ExploreNavOption: NavOption = {
   route: WalletRoutes.Explore,
 }
 
+const CreatorsNavOption: NavOption = {
+  id: 'creators',
+  name: S.BRAVE_WALLET_CREATORS,
+  icon: 'user-accounts',
+  route: WalletRoutes.Creators,
+}
+
 export const PanelNavOptions: NavOption[] = [
+  CreatorsNavOption,
   {
     id: 'portfolio',
     name: S.BRAVE_WALLET_TOP_NAV_PORTFOLIO,
@@ -148,6 +156,7 @@ export const PanelNavOptions: NavOption[] = [
 ]
 
 export const NavOptions: NavOption[] = [
+  CreatorsNavOption,
   {
     id: 'portfolio',
     name: S.BRAVE_WALLET_TOP_NAV_PORTFOLIO,

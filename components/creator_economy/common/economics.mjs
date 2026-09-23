@@ -3,6 +3,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
 // You can obtain one at https://mozilla.org/MPL/2.0/.
 
+import { allocateMintFee } from './mint-fees.ts'
+
 export const BPS = 10_000n
 export const UNIT = 1_000_000_000n
 export const U64_MAX = (1n << 64n) - 1n
@@ -63,11 +65,16 @@ export function policy({ burnShareBps, setupShareBps = 0n,
     transferBps, maximumTransferFee })
 }
 
-export function splitFee(fee, config, recoveringSetup = false) {
+export function splitFee(fee, config, recoveringSetup = false,
+  entitlement = { creator: 0n, deployer: 0n }) {
   amount(fee)
-  const burn = fee * config.burnShareBps / BPS
-  const setup = recoveringSetup ? fee * config.setupShareBps / BPS : 0n
-  return { burn, setup, curation: fee - burn - setup }
+  const { creator, deployer } = entitlement
+  amount(creator)
+  amount(deployer)
+  const manager = amount(fee - creator - deployer)
+  const burn = manager * config.burnShareBps / BPS
+  const setup = recoveringSetup ? manager * config.setupShareBps / BPS : 0n
+  return { burn, setup, curation: manager - burn - setup, creator, deployer }
 }
 
 function checkPool(pool) {
@@ -90,10 +97,11 @@ export function quoteMint(pool, lamports, config, recoveringSetup = false) {
   const gross = pool.supply === 0n
     ? lamports : lamports * pool.supply / pool.backing
   amount(gross)
-  const fee = feeFor(gross, config.mintBps)
+  const allocation = allocateMintFee(gross, config.mintBps)
+  const fee = allocation.totalFee
   const received = gross - fee
   if (received <= 0n) throw new RangeError('Amount is too small after fees')
-  const split = splitFee(fee, config, recoveringSetup)
+  const split = splitFee(fee, config, recoveringSetup, allocation)
   const next = { backing: pool.backing + lamports,
     supply: pool.supply + gross - split.burn }
   checkPool(next)

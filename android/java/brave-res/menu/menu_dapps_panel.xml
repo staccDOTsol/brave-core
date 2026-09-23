@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/action_creators"
+        android:icon="@drawable/ic_web"
+        android:title="@string/brave_wallet_creators_menu" />
+    <item
         android:id="@+id/action_lock_wallet"
         android:icon="@drawable/ic_wallet_lock"
         android:title="@string/dapps_menu_lock_wallet" />

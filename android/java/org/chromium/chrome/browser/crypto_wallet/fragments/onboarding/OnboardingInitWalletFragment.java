@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.BraveActivity;
 import org.chromium.chrome.browser.app.helpers.Api33AndPlusBackPressHelper;
 import org.chromium.chrome.browser.crypto_wallet.activities.BraveWalletActivity;
+import org.chromium.chrome.browser.crypto_wallet.util.WalletUtils;
 
 /** Initial onboarding fragment to setup Brave Wallet. */
 public class OnboardingInitWalletFragment extends BaseOnboardingWalletFragment {
@@ -65,6 +66,14 @@ public class OnboardingInitWalletFragment extends BaseOnboardingWalletFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setAnimatedBackground(view.findViewById(R.id.setup_wallet_root));
+
+        view.findViewById(R.id.creator_wallet_button)
+                .setOnClickListener(
+                        v -> {
+                            if (WalletUtils.openCreatorWallet()) {
+                                requireActivity().finish();
+                            }
+                        });
 
         CardView newWallet = view.findViewById(R.id.new_wallet_card_view);
         newWallet.setOnClickListener(

@@ -1,5 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grit-part>
+  <message name="IDS_BRAVE_WALLET_CREATORS" desc="Title and navigation entry for creator profiles in the wallet" formatter_data="webui=Wallet">Creators</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_INTRO" desc="Introductory description of creator following and content curation" formatter_data="webui=Wallet">Your creators. Your curation. Follow profiles and collect the content you want to support.</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_SAVE_ERROR" desc="Error shown when a creator bookmark or curation cannot be persisted" formatter_data="webui=Wallet">Could not save. Check the link and available browser storage.</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_FOLLOW_TITLE" desc="Heading for the creator profile form" formatter_data="webui=Wallet">Follow a creator</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_PROFILE_URL" desc="Label for a public HTTPS creator profile URL input" formatter_data="webui=Wallet">Creator profile or website URL</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_FOLLOW" desc="Button to save a creator profile locally" formatter_data="webui=Wallet">Follow</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_LOCAL_NOTE" desc="Description of local creator bookmark storage and its effect" formatter_data="webui=Wallet">Saved in this browser profile. Following does not spend funds or verify profile ownership.</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_EMPTY" desc="Empty state for the creator library" formatter_data="webui=Wallet">No creators followed yet.</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_UNVERIFIED" desc="Label for creator profiles whose ownership has not been checked" formatter_data="webui=Wallet">Ownership not verified</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_UNFOLLOW" desc="Button to remove a creator and its saved content" formatter_data="webui=Wallet">Unfollow</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_CURATION_TITLE" desc="Heading for the content curation form" formatter_data="webui=Wallet">Curate content</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_SELECT" desc="Label for the creator selector for content attribution" formatter_data="webui=Wallet">Creator</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_CONTENT_URL" desc="Label for a public HTTPS content URL input" formatter_data="webui=Wallet">Content URL</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_SAVE_CONTENT" desc="Button to save a local content curation" formatter_data="webui=Wallet">Save content</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_CURATION_NOTE" desc="Description distinguishing a local curation bookmark from a financial reward" formatter_data="webui=Wallet">Saved content is private to this browser profile. Reward eligibility requires verified attribution and a settled payment.</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_REMOVE_CONTENT" desc="Button to remove a saved content curation" formatter_data="webui=Wallet">Remove content</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_FEES_TITLE" desc="Heading for the mint referral fee calculation" formatter_data="webui=Wallet">Mint fee breakdown</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_FEES_DESCRIPTION" desc="Explanation of the default mint fee and its referral allocation" formatter_data="webui=Wallet">The default mint fee is 6.9%. Half of that fee is shared equally between the deployer and the creator. Redemption and transfer fees are separate.</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_GROSS_SHARES" desc="Label for the pool-token amount used to illustrate fee allocation" formatter_data="webui=Wallet">Gross LST shares before mint fees</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_AMOUNT_ERROR" desc="Error for an invalid token amount in the fee calculation" formatter_data="webui=Wallet">Enter an amount with at most nine decimal places.</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_USER_SHARES" desc="Label for the net pool tokens minted to the depositor" formatter_data="webui=Wallet">Supporter receives</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_TOTAL_FEE" desc="Label for the full deposit fee in pool tokens" formatter_data="webui=Wallet">Total mint fee</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_DEPLOYER_SHARE" desc="Label for half the mint referral allocation before payout costs" formatter_data="webui=Wallet">Deployer entitlement</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_CREATOR_SHARE" desc="Label for the creator half of the mint referral allocation before payout costs" formatter_data="webui=Wallet">Creator entitlement</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_MANAGER_SHARE" desc="Label for the manager allocation available to the burn and curation policy" formatter_data="webui=Wallet">Remaining fee budget</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_ESCROW_NOTE" desc="Description of creator fee entitlement and unclaimed escrow" formatter_data="webui=Wallet">The creator share accrues before or after a profile claim. Unclaimed amounts stay reserved for that creator until ownership is verified. Payouts can incur transfer or redemption fees.</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_FUNDING_STATUS" desc="Current availability of creator staking and custody services" formatter_data="webui=Wallet">This is a fee illustration in LST shares, not a funded quote. Creator pool setup, custody sign-in and payouts are not connected in this build.</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_MENU" desc="Android wallet panel menu entry for creator profiles" formatter_data="android_java">Creators</message>
+
   <message name="IDS_TOOLTIP_WALLET" desc="Tooltip to acccess the Brave Wallet">Brave Wallet</message>
   <message name="IDS_ACCNAME_BRAVE_WALLET_BUTTON" desc="The accessible name for the Brave Wallet bubble.">Brave Wallet</message>
   <message name="IDS_BRAVE_WALLET" desc="The name of the feature Brave Wallet" formatter_data="webui=Wallet">Brave Wallet</message>

@@ -129,6 +129,9 @@ export function unicodeEscape(string: string) {
 export const removeDoubleSpaces = (val: string) => val.replace(/ +(?= )/g, '')
 
 export const getWalletLocationTitle = (location: string) => {
+  if (location === WalletRoutes.Creators) {
+    return getLocale(S.BRAVE_WALLET_CREATORS)
+  }
   /** Buy crypto */
   if (location.includes(WalletRoutes.BuyPageStart)) {
     return getLocale(S.BRAVE_WALLET_BUY_CRYPTO_BUTTON)
