@@ -10,9 +10,13 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 declare_args() {
   brave_services_key = ""
+
+  # Independent distributions can package optimized releases without access to
+  # Brave-operated services. This does not grant access to those services.
+  brave_require_services_key = is_official_build
 }
 
-if (is_official_build) {
+if (brave_require_services_key) {
   assert(brave_services_key != "")
 }
 

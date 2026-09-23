@@ -334,6 +334,11 @@ configuration and produce the actual native application, not the prototype or
 simulator. The artifact directory includes SHA256SUMS and release-manifest.json.
 Missing or empty platform artifacts fail the job.
 
+FairCreators sets `brave_require_services_key=false` while keeping the optimized
+Release configuration. It does not provide a Brave services API key; features
+requiring that credential remain unavailable. The default upstream official
+build still requires a key. This setting only controls the local build check.
+
 | Target | Artifact | Distribution |
 | --- | --- | --- |
 | iOS arm64 device | IPA | App Store Connect export, Apple Distribution signing |

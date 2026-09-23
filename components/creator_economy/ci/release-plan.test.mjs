@@ -2,6 +2,16 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { releasePlan, assertReleaseArtifacts } from './release-plan.mjs'
 
+test('independent releases keep Release optimization without Brave service credentials', () => {
+  for (const target of ['ios', 'macos', 'android', 'windows', 'linux']) {
+    const { args } = releasePlan(target)
+    assert.equal(args[0], 'Release')
+    assert.ok(args.includes('brave_require_services_key:false'))
+    assert.ok(!args.some((arg) => arg.startsWith('brave_services_key:')))
+    assert.ok(!args.includes('is_official_build:false'))
+  }
+})
+
 test('iOS releases target physical arm64 devices, never the simulator', () => {
   const plan = releasePlan('ios')
   assert.ok(plan.args.includes('--target_environment=device'))
