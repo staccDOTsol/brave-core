@@ -5,6 +5,7 @@ import { statfsSync, writeFileSync, createWriteStream, appendFileSync } from 'no
 import { spawn, execFileSync } from 'node:child_process'
 import { availableParallelism, totalmem } from 'node:os'
 import { assessCapacity } from './native-capacity.mjs'
+import { buildRelease } from './release.mjs'
 
 if (process.env.GITHUB_ACTIONS !== 'true') {
   throw new Error('Native builds run in GitHub CI; no local Chromium build is allowed')
@@ -12,6 +13,8 @@ if (process.env.GITHUB_ACTIONS !== 'true') {
 const target = process.env.CREATOR_BUILD_TARGET
 const configuration = process.env.CREATOR_BUILD_CONFIGURATION
 const preflightOnly = process.argv.includes('--preflight')
+const distribution = process.env.CREATOR_BUILD_DISTRIBUTION === 'true'
+if (distribution && configuration !== 'Release') throw new Error('Distribution requires Release configuration')
 const log = createWriteStream('creator-build.log', { flags: 'a' })
 async function run(command, args) {
   process.stdout.write(`Running ${command} ${args.join(' ')}\n`)
@@ -28,10 +31,10 @@ async function run(command, args) {
   })
 }
 const args = target === 'android' ? ['--target_os=android', '--target_arch=arm64']
-  : target === 'ios' ? ['--target_os=ios', `--target_arch=${process.arch === 'arm64' ? 'arm64' : 'x64'}`]
-    : []
+  : target === 'ios' ? ['--target_os=ios', `--target_arch=${distribution || process.arch === 'arm64' ? 'arm64' : 'x64'}`]
+    : target === 'macos' && distribution ? ['--target_arch=arm64'] : []
 const pnpm = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
-const record = { target, configuration, workflowRevision: process.env.GITHUB_SHA,
+const record = { target, configuration, distribution, workflowRevision: process.env.GITHUB_SHA,
   startedAt: new Date().toISOString(), status: 'started', phase: 'preflight' }
 writeFileSync('creator-build-record.json', JSON.stringify(record, null, 2))
 try {
@@ -47,6 +50,7 @@ try {
   if (preflightOnly) {
     record.status = 'capacity-passed'
   } else {
+    if (distribution && target === 'macos') await run('python3', ['components/creator_economy/ci/mac-icon-catalog.py'])
     record.phase = 'initialize'
     writeFileSync('creator-build-record.json', JSON.stringify(record, null, 2))
     await run(pnpm, ['run', 'init', '--no-history', ...args])
@@ -56,7 +60,9 @@ try {
     }
     record.phase = 'compile'
     writeFileSync('creator-build-record.json', JSON.stringify(record, null, 2))
-    if (target === 'ios') {
+    if (distribution) {
+      record.release = await buildRelease({ target, run, pnpm, jobs: capacity.jobs })
+    } else if (target === 'ios') {
       await run(pnpm, ['run', 'ios_bootstrap'])
       await run('xcodebuild', ['-project', 'ios/brave-ios/App/Client.xcodeproj',
         '-scheme', configuration, '-configuration', configuration === 'Component' ? 'Debug' : 'Release',
@@ -65,7 +71,7 @@ try {
     } else await run(pnpm, ['run', 'build', configuration, ...args,
       '--ninja', `j:${capacity.jobs}`, '--gn', 'symbol_level:0',
       '--gn', 'blink_symbol_level:0', '--gn', 'v8_symbol_level:0'])
-    record.status = 'compiled'
+    record.status = distribution ? 'packaged' : 'compiled'
   }
 } catch (error) {
   record.status = 'failed'

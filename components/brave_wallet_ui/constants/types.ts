@@ -832,6 +832,7 @@ export const SendPageTabHashes = {
 } as const
 
 export type NavIDTypes =
+  | 'creators'
   | 'buy'
   | 'send'
   | 'swap'

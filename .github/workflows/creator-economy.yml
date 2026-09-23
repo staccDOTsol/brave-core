@@ -6,6 +6,9 @@ on:
     paths:
       - 'components/creator_economy/**'
       - 'build/commands/lib/repositories*'
+      - 'app/theme/**'
+      - 'build/mac/**'
+      - 'ios/brave-ios/App/**'
       - 'components/brave_wallet_ui/**'
       - 'components/resources/wallet_strings.grdp'
       - 'android/java/org/chromium/chrome/browser/crypto_wallet/**'
@@ -20,6 +23,9 @@ on:
     paths:
       - 'components/creator_economy/**'
       - 'build/commands/lib/repositories*'
+      - 'app/theme/**'
+      - 'build/mac/**'
+      - 'ios/brave-ios/App/**'
       - 'components/brave_wallet_ui/**'
       - 'components/resources/wallet_strings.grdp'
       - 'android/java/org/chromium/chrome/browser/crypto_wallet/**'
@@ -79,4 +85,6 @@ jobs:
         if: runner.os == 'macOS'
         run: swiftc -frontend -parse ios/brave-ios/Sources/BraveWallet/Panels/WalletPanelView.swift ios/brave-ios/Sources/BraveWallet/WalletStrings.swift ios/brave-ios/Sources/BraveShared/BraveURLs.swift
       - name: Check remote build script syntax
-        run: node --check components/creator_economy/ci/native-build.mjs
+        run: |
+          node --check components/creator_economy/ci/native-build.mjs
+          node --check components/creator_economy/ci/release.mjs

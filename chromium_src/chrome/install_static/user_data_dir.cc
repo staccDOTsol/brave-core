@@ -35,7 +35,7 @@ std::wstring& BraveAppendChromeInstallSubDirectory(const InstallConstants& mode,
   if (!include_suffix && path->starts_with(L"SOFTWARE\\Policies\\") &&
       path->ends_with(kProductPathName)) {
     *path = path->substr(0, (path->length() - kProductPathNameLength));
-    path->append(L"Brave");
+    path->append(L"FairCreators");
   }
 
   return *path;
