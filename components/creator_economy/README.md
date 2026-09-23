@@ -36,13 +36,17 @@ is not finalized. Redemption and transfer fees have no referral allocation here.
 With Node 24.16 or newer, from the repository root:
 
 ```sh
-node --test "components/creator_economy/common/*.test.mjs"
+node --test "components/creator_economy/common/*.test.mjs" "components/creator_economy/ci/*.test.mjs"
 python3 components/creator_economy/ci/check-resources.py
 ```
 
 The GitHub workflow runs accounting, retry, identity and library tests on Linux,
 macOS and Windows; checks TypeScript models and UI syntax; validates resources;
 and parses changed Swift files on macOS. These checks do not replace native
-compilation or on-device testing. `creator-native-build.yml` is ready for a
-provisioned remote runner with the documented capacity. No suitable runner is
-currently registered on the fork. The standalone demo server has been retired.
+compilation or on-device testing. `creator-native-build.yml` supports a
+`preflight_only` dispatch to measure a runner before downloading Chromium.
+It requires the documented 100 GB disk / 8 GB RAM minimum, compares raw bytes,
+limits parallelism, and saves a diagnostic record even when preflight fails.
+A passing capacity check is not a successful build. See the remote build section
+in the integration contract for measured runner limits. The standalone demo
+server has been retired.

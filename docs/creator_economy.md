@@ -286,19 +286,31 @@ program version later; do not use the closed ID as a default live route.
 ## Verification and remote builds
 
 The [component README](../components/creator_economy/README.md) has run commands.
-The checks workflow runs 31 accounting, referral, bootstrap, detection and
-creator-library tests on Linux, macOS and Windows. It type-checks the pure models,
+The checks workflow runs accounting, referral, bootstrap, detection, runner
+capacity and creator-library tests on Linux, macOS and Windows. It type-checks the pure models,
 transpiles the new wallet UI, validates localized resources and parses changed
 Swift files. It does not initialize Chromium or assert that the native browser
 compiles. Storybook includes empty and populated creator states. The standalone
 demo server and its HTML/CSS/JS entry points have been retired.
 
 `creator-native-build.yml` is a manual GitHub Actions build recipe for Linux,
-Android arm64, macOS, iOS simulator and Windows. Supply a provisioned runner
-label with the appropriate OS, toolchain, at least 120 GiB free disk and 16 GiB
-RAM. The preflight checks these before downloading Chromium. macOS/iOS require
-the supported Xcode installation; Windows requires the Chromium-supported
-Visual Studio toolchain. The workflow has not yet compiled a native product.
+Android arm64, macOS, iOS simulator and Windows. Supply a runner label with the
+appropriate OS/toolchain. A `preflight_only` dispatch measures capacity without
+initializing Chromium. Run names include platform/configuration/runner, and
+preflight failures produce a build record and job summary.
+
+The minimum check uses 100 GB free disk and 8 GB RAM in raw bytes, matching
+[Chromium's documented build minimum](https://chromium.googlesource.com/chromium/src/+/main/docs/windows_build_instructions.md).
+Passing does not guarantee completion: more than 16 GB RAM is recommended and
+large Release builds may need substantially more disk. Initialization uses
+`--no-history`; desktop/Android builds disable debug symbols and cap concurrent
+jobs by RAM and CPU count. Native toolchain requirements still apply.
+
+The first hosted attempts on September 23, 2026 stopped before compilation.
+Linux/Android reported 79 GiB free disk; Apple ARM runners reported 88–89 GiB
+and 7 GiB RAM. Windows reported 213 GiB and 15 GiB RAM and was incorrectly
+rejected by the original hard 16 GiB threshold. That threshold has been fixed;
+insufficient disk/RAM remains an error, not a successful native build.
 
 Use [Brave's build instructions](https://github.com/brave/brave-core#clone-and-initialize)
 and [iOS instructions](https://github.com/brave/brave-browser/wiki/iOS-Development-Environment)

@@ -1,31 +1,18 @@
 // Copyright (c) 2026 The Brave Authors. All rights reserved.
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. https://mozilla.org/MPL/2.0/.
-import { statfsSync, writeFileSync, createWriteStream } from 'node:fs'
+import { statfsSync, writeFileSync, createWriteStream, appendFileSync } from 'node:fs'
 import { spawn } from 'node:child_process'
 import { availableParallelism, totalmem } from 'node:os'
+import { assessCapacity } from './native-capacity.mjs'
 
 if (process.env.GITHUB_ACTIONS !== 'true') {
   throw new Error('Native builds run in GitHub CI; no local Chromium build is allowed')
 }
 const target = process.env.CREATOR_BUILD_TARGET
 const configuration = process.env.CREATOR_BUILD_CONFIGURATION
-const hostFor = { linux: 'linux', android: 'linux', macos: 'darwin',
-  ios: 'darwin', windows: 'win32' }
-if (!Object.hasOwn(hostFor, target) || !['Component', 'Release'].includes(configuration)) {
-  throw new Error('Invalid native build target or configuration')
-}
-if (process.platform !== hostFor[target]) throw new Error(`Wrong host OS for ${target}`)
-const disk = statfsSync('.')
-const freeGiB = Math.floor(disk.bavail * disk.bsize / 1024 ** 3)
-const ramGiB = Math.floor(totalmem() / 1024 ** 3)
-if (freeGiB < 120 || ramGiB < 16) {
-  throw new Error(`Chromium needs a provisioned runner: found ${freeGiB} GiB free, ${ramGiB} GiB RAM; require at least 120/16`)
-}
-process.stdout.write(`Remote build preflight: ${target}, ${freeGiB} GiB free, ${ramGiB} GiB RAM, ${availableParallelism()} CPUs\n`)
-if (process.argv.includes('--preflight')) process.exit(0)
-
-const log = createWriteStream('creator-build.log')
+const preflightOnly = process.argv.includes('--preflight')
+const log = createWriteStream('creator-build.log', { flags: 'a' })
 async function run(command, args) {
   process.stdout.write(`Running ${command} ${args.join(' ')}\n`)
   await new Promise((resolve, reject) => {
@@ -45,28 +32,52 @@ const args = target === 'android' ? ['--target_os=android', '--target_arch=arm64
     : []
 const pnpm = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
 const record = { target, configuration, revision: process.env.GITHUB_SHA,
-  startedAt: new Date().toISOString(), status: 'started', freeGiB, ramGiB }
+  startedAt: new Date().toISOString(), status: 'started', phase: 'preflight' }
 writeFileSync('creator-build-record.json', JSON.stringify(record, null, 2))
 try {
-  await run(pnpm, ['run', 'init', ...args])
-  if (process.platform === 'linux') {
-    await run('sudo', ['../build/install-build-deps.sh', '--no-prompt',
-      ...(target === 'android' ? ['--android'] : [])])
+  const disk = statfsSync('.')
+  const capacity = assessCapacity({ target, configuration, platform: process.platform,
+    freeBytes: disk.bavail * disk.bsize, ramBytes: totalmem(), cpus: availableParallelism() })
+  record.capacity = capacity
+  const measurement = `${target}: ${capacity.freeGiB} GiB free, ${capacity.ramGiB} GiB RAM, ${capacity.jobs} build jobs`
+  process.stdout.write(`${measurement}\n`)
+  log.write(`${measurement}\n`)
+  if (capacity.errors.length) throw new Error(capacity.errors.join('; '))
+  if (preflightOnly) {
+    record.status = 'capacity-passed'
+  } else {
+    record.phase = 'initialize'
+    writeFileSync('creator-build-record.json', JSON.stringify(record, null, 2))
+    await run(pnpm, ['run', 'init', '--no-history', ...args])
+    if (process.platform === 'linux') {
+      await run('sudo', ['../build/install-build-deps.sh', '--no-prompt',
+        ...(target === 'android' ? ['--android'] : [])])
+    }
+    record.phase = 'compile'
+    writeFileSync('creator-build-record.json', JSON.stringify(record, null, 2))
+    if (target === 'ios') {
+      await run(pnpm, ['run', 'ios_bootstrap'])
+      await run('xcodebuild', ['-project', 'ios/brave-ios/App/Client.xcodeproj',
+        '-scheme', configuration, '-configuration', configuration === 'Component' ? 'Debug' : 'Release',
+        '-sdk', 'iphonesimulator', '-destination', 'generic/platform=iOS Simulator',
+        '-derivedDataPath', '../../out/creator-ios', 'CODE_SIGNING_ALLOWED=NO', 'build'])
+    } else await run(pnpm, ['run', 'build', configuration, ...args,
+      '--ninja', `j:${capacity.jobs}`, '--gn', 'symbol_level:0',
+      '--gn', 'blink_symbol_level:0', '--gn', 'v8_symbol_level:0'])
+    record.status = 'compiled'
   }
-  if (target === 'ios') {
-    await run(pnpm, ['run', 'ios_bootstrap'])
-    await run('xcodebuild', ['-project', 'ios/brave-ios/App/Client.xcodeproj',
-      '-scheme', configuration, '-configuration', configuration === 'Component' ? 'Debug' : 'Release',
-      '-sdk', 'iphonesimulator', '-destination', 'generic/platform=iOS Simulator',
-      '-derivedDataPath', '../../out/creator-ios', 'CODE_SIGNING_ALLOWED=NO', 'build'])
-  } else await run(pnpm, ['run', 'build', configuration, ...args])
-  record.status = 'compiled'
 } catch (error) {
   record.status = 'failed'
   record.error = error.message
+  process.stderr.write(`Native ${record.phase} failed: ${error.message}\n`)
+  log.write(`Native ${record.phase} failed: ${error.message}\n`)
   process.exitCode = 1
 } finally {
   record.finishedAt = new Date().toISOString()
   writeFileSync('creator-build-record.json', JSON.stringify(record, null, 2))
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+      `### Native build result\n\n\`\`\`json\n${JSON.stringify(record, null, 2)}\n\`\`\`\n`)
+  }
   log.end()
 }
