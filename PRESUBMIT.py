@@ -643,8 +643,16 @@ def CheckPlasterFiles(input_api, output_api):
     if not affected_files:
         return []
 
-    cmd = [input_api.python3_executable, 'tools/cr/plaster.py', 'check'
-           ] + affected_files
+    # Pass the file list via an `@file` response file instead of as separate
+    # argv entries, so large changes don't hit OS command-line length limits.
+    filelist = input_api.CreateTemporaryFile(mode='w', suffix='.txt')
+    filelist.write('\n'.join(affected_files))
+    filelist.close()
+
+    cmd = [
+        input_api.python3_executable, 'tools/cr/plaster.py', 'check',
+        '@' + filelist.name
+    ]
     kwargs = {'cwd': input_api.PresubmitLocalPath()}
     return input_api.RunTests([
         input_api.Command(name='plaster_check',

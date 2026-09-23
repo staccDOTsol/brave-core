@@ -5483,7 +5483,11 @@ def main():
 
     # Add the 'check' subparser
     check_parser = add_command(
-        'check', 'Check that plaster files are applied to sources.')
+        'check',
+        'Check that plaster files are applied to sources.',
+        # Lets callers pass `@some_file` with one filepath per line, avoiding
+        # OS command-line length limits for large changes.
+        fromfile_prefix_chars='@')
     check_parser.add_argument('filepaths',
                               nargs='*',
                               help='Filepaths to check')
