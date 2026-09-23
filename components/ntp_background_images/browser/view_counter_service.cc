@@ -321,6 +321,14 @@ void ViewCounterService::OnPreferenceChanged(const std::string& pref_name) {
   if (pref_name == brave_ads::prefs::kSponsoredEnabled ||
       pref_name == prefs::kNewTabPageShowBackgroundImage) {
     RecordSponsoredImagesEnabledP3A(prefs_);
+
+    // The component is otherwise never unregistered once the user turns
+    // off NTP sponsored ads.
+    if (IsSponsoredImagesWallpaperOptedIn() && IsShowBackgroundImageOptedIn()) {
+      background_images_service_->RegisterSponsoredImagesComponent();
+    } else {
+      background_images_service_->UnregisterSponsoredImagesComponent();
+    }
   }
 #endif  // BUILDFLAG(ENABLE_BRAVE_ADS)
 

@@ -91,6 +91,7 @@ class NTPBackgroundImagesService {
       const base::FilePath& request_path) const;
   const std::optional<std::string>& GetSponsoredImagesComponentId() const;
   virtual void RegisterSponsoredImagesComponent();
+  virtual void UnregisterSponsoredImagesComponent();
 
   void MaybeCheckForSponsoredComponentUpdate();
   void ForceSponsoredComponentUpdate();

@@ -299,6 +299,30 @@ void NTPBackgroundImagesService::RegisterSponsoredImagesComponent() {
   ScheduleNextSponsoredImagesComponentUpdate();
 }
 
+void NTPBackgroundImagesService::UnregisterSponsoredImagesComponent() {
+  if (!sponsored_images_component_id_) {
+    return;
+  }
+
+  VLOG(0) << "Unregistering NTP Sponsored Images component with ID "
+          << *sponsored_images_component_id_;
+  component_update_service_->UnregisterComponent(
+      *sponsored_images_component_id_);
+  sponsored_images_component_id_.reset();
+
+  // Drop any in-progress callbacks bound to the now-unregistered component.
+  sponsored_images_weak_factory_.InvalidateWeakPtrs();
+  sponsored_images_installed_dir_.reset();
+
+  ResetSponsoredImagesData();
+
+  sponsored_sites_data_.reset();
+  observers_.Notify(&Observer::OnSponsoredSitesDataDidUpdate);
+
+  sponsored_images_update_check_callback_.Reset();
+  sponsored_images_update_check_timer_.Stop();
+}
+
 void NTPBackgroundImagesService::OnVariationsCountryPrefChanged() {
   if (sponsored_images_component_id_) {
     // Re-register the Sponsored Images component when the country preference
