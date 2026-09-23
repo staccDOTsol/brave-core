@@ -47,17 +47,20 @@ describe('parsePatchedRepositories', () => {
     ).toEqual(['v8', '', 'third_party/ffmpeg'])
   })
 
-  it('ignores comments and blank lines', () => {
-    const contents = [
-      '# a leading comment',
-      '',
-      '//  # chromium',
-      '//v8',
-      '#//third_party/ffmpeg',
-      '   ',
-    ].join('\n')
-    expect(parsePatchedRepositories(contents, filePath)).toEqual(['', 'v8'])
-  })
+  it.each(['\n', '\r\n'])(
+    'ignores comments and blank lines with %j endings',
+    (eol) => {
+      const contents = [
+        '# a leading comment',
+        '',
+        '//  # chromium',
+        '//v8',
+        '#//third_party/ffmpeg',
+        '   ',
+      ].join(eol)
+      expect(parsePatchedRepositories(contents, filePath)).toEqual(['', 'v8'])
+    },
+  )
 
   it('tolerates a trailing slash', () => {
     expect(parsePatchedRepositories('//\n//v8/\n', filePath)).toEqual([
