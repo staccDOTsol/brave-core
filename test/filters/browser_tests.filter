@@ -1869,7 +1869,7 @@
 
 # These tests fail because we override ShouldEnablePageContentAnnotations to
 # return false (disables creation of PageContentAnnotationsService)
--All/PageContentAnnotationsServiceContentExtraction*Test.*/*
+-All/PageContentAnnotationsServiceContentExtraction*Test*.*/*
 -HistoryEmbeddingsBrowserTest.*
 -HistoryEmbeddingsWithLowAggregationBrowserTest.PassageContextSelectionLimitedByWordCount
 -HistoryEmbeddingsWithUrlFilterBrowserTest.DoesNotFilterUrlNotOnBlocklist
