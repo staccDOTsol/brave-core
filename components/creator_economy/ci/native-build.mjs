@@ -2,7 +2,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. https://mozilla.org/MPL/2.0/.
 import { statfsSync, writeFileSync, createWriteStream, appendFileSync } from 'node:fs'
-import { spawn } from 'node:child_process'
+import { spawn, execFileSync } from 'node:child_process'
 import { availableParallelism, totalmem } from 'node:os'
 import { assessCapacity } from './native-capacity.mjs'
 
@@ -31,10 +31,11 @@ const args = target === 'android' ? ['--target_os=android', '--target_arch=arm64
   : target === 'ios' ? ['--target_os=ios', `--target_arch=${process.arch === 'arm64' ? 'arm64' : 'x64'}`]
     : []
 const pnpm = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
-const record = { target, configuration, revision: process.env.GITHUB_SHA,
+const record = { target, configuration, workflowRevision: process.env.GITHUB_SHA,
   startedAt: new Date().toISOString(), status: 'started', phase: 'preflight' }
 writeFileSync('creator-build-record.json', JSON.stringify(record, null, 2))
 try {
+  record.revision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
   const disk = statfsSync('.')
   const capacity = assessCapacity({ target, configuration, platform: process.platform,
     freeBytes: disk.bavail * disk.bsize, ramBytes: totalmem(), cpus: availableParallelism() })
