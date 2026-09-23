@@ -102,7 +102,6 @@ void BravePsstDialogUI::Close() {
   if (!desktop_dialog_delegate_) {
     return;
   }
-
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
