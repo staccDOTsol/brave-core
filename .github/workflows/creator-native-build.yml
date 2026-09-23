@@ -1,0 +1,66 @@
+name: Creator browser native build
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Native platform to compile remotely
+        type: choice
+        options: [linux, android, macos, ios, windows]
+        required: true
+      runner:
+        description: Provisioned GitHub runner label (120 GiB free; matching OS/toolchain)
+        type: string
+        required: true
+      configuration:
+        description: Build configuration
+        type: choice
+        options: [Component, Release]
+        default: Component
+
+permissions:
+  contents: read
+
+concurrency:
+  group: creator-native-${{ inputs.target }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native:
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: 360
+    env:
+      CREATOR_BUILD_TARGET: ${{ inputs.target }}
+      CREATOR_BUILD_CONFIGURATION: ${{ inputs.configuration }}
+      DEPOT_TOOLS_WIN_TOOLCHAIN: '0'
+    defaults:
+      run:
+        working-directory: src/brave
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          path: src/brave
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '24'
+      - name: Check runner capacity before downloading Chromium
+        run: node components/creator_economy/ci/native-build.mjs --preflight
+      - name: Install pinned package manager
+        run: npm install --global pnpm@11.11.0
+      - name: Initialize and compile on the remote runner
+        run: node components/creator_economy/ci/native-build.mjs
+      - name: Save build record and logs
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: native-${{ inputs.target }}-${{ github.run_id }}
+          path: |
+            src/brave/creator-build-record.json
+            src/brave/creator-build.log
+          retention-days: 14
+          if-no-files-found: warn
+
+# Native source integration, distributable packaging and signing are separate
+# milestones. This workflow compiles the selected checkout; it does not publish.

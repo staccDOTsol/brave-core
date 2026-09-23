@@ -98,6 +98,12 @@ public struct WalletPanelContainerView: View {
           Text(Strings.Wallet.learnMoreButton)
         }
         .buttonStyle(.filled)
+        Button {
+          openWalletURLAction?(.webUI.wallet.creators)
+        } label: {
+          Text(Strings.Wallet.creators)
+        }
+        .buttonStyle(.plain)
       }
       .padding()
       .padding()
@@ -386,6 +392,12 @@ struct WalletPanelView: View {
 
   private var menuButton: some View {
     Menu {
+      Button {
+        openWalletURL(.webUI.wallet.creators)
+      } label: {
+        Label(Strings.Wallet.creators, braveSystemImage: "leo.user.accounts")
+      }
+      Divider()
       Button {
         keyringStore.lock()
       } label: {

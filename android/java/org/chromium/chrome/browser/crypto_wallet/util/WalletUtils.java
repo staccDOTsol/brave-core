@@ -96,6 +96,15 @@ public class WalletUtils {
      *     refresh an old tab whose URL starts with @link BraveActivity#BRAVE_WALLET_BASE_URL}.
      */
     public static void openWebWallet(final boolean forceNewTab) {
+        openWebWallet(forceNewTab, BraveActivity.BRAVE_WALLET_URL);
+    }
+
+    /** Opens creator discovery without requiring a self-custody wallet setup. */
+    public static boolean openCreatorWallet() {
+        return openWebWallet(false, BraveActivity.BRAVE_WALLET_ORIGIN + "creators");
+    }
+
+    private static boolean openWebWallet(final boolean forceNewTab, final String walletUrl) {
         try {
             BraveActivity activity = BraveActivity.getBraveActivity();
             if (forceNewTab) {
@@ -103,10 +112,12 @@ public class WalletUtils {
             }
 
             activity.openNewOrRefreshExistingTab(
-                    BraveActivity.BRAVE_WALLET_ORIGIN, BraveActivity.BRAVE_WALLET_URL);
+                    BraveActivity.BRAVE_WALLET_ORIGIN, walletUrl);
             TabUtils.bringChromeTabbedActivityToTheTop(activity);
+            return true;
         } catch (BraveActivity.BraveActivityNotFoundException e) {
             Log.e(TAG, "Error while opening wallet tab.", e);
+            return false;
         }
     }
 

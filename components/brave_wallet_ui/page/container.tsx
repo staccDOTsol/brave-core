@@ -68,6 +68,7 @@ import {
 } from '../components/desktop/popup-modals/partners_consent_modal/partners_consent_modal'
 import { Connections } from '../components/extension/connections/connections'
 import { PageNotFound } from './screens/page_not_found/page_not_found'
+import { CreatorHub } from './screens/creators/creator-hub'
 import {
   DesktopTransactionConfirmation, //
 } from './components/desktop_transaction_confirmation/desktop_transaction_confirmation'
@@ -223,6 +224,10 @@ export const Container = () => {
         size='small'
       />
       <Switch>
+        {/* Creator discovery has no dependency on a self-custody seed wallet. */}
+        <Route path={WalletRoutes.Creators} exact>
+          <CreatorHub />
+        </Route>
         <ProtectedRoute
           path={WalletRoutes.Onboarding}
           requirement={walletNotYetCreated}
@@ -319,7 +324,7 @@ export const Container = () => {
         <Route
           path={WalletRoutes.Root}
           exact={true}
-          render={() => <Redirect to={defaultRedirect} />}
+          render={() => <Redirect to={WalletRoutes.Creators} />}
         />
 
         {/* Insures that we redirect to the default route if the user

@@ -97,6 +97,12 @@ export const OnboardingWelcome = () => {
 
           <ActionsContainer>
             <WelcomeAction
+              title={getLocale(S.BRAVE_WALLET_CREATORS)}
+              description={getLocale(S.BRAVE_WALLET_CREATORS_INTRO)}
+              iconName='user-accounts'
+              onSelect={() => history.push(WalletRoutes.Creators)}
+            />
+            <WelcomeAction
               title={getLocale(S.BRAVE_WALLET_WELCOME_NEW_WALLET_TITLE)}
               description={getLocale(
                 S.BRAVE_WALLET_WELCOME_NEW_WALLET_DESCRIPTION,

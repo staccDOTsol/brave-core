@@ -4,6 +4,7 @@
 // You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import { log, throttle } from './helpers'
+import { makeCreatorContext } from './creator_context'
 
 export interface CreatorInfo {
   id: string
@@ -26,6 +27,25 @@ function setPageDetectionHandler(detectCreator: DetectionHandler) {
 export function initializeDetector(initializer: () => DetectionHandler) {
   const detectCreator = throttle(initializer())
   let currentURL = ''
+
+  // Explicitly requested by a creator-support surface. This performs no wallet,
+  // backend or chain action; Rewards keeps its existing detection behavior.
+  Object.assign(self, {
+    braveCreatorEconomy: {
+      detectContext: async () => {
+        const pageURL = location.href
+        try {
+          const creator = await detectCreator()
+          // A single-page navigation during detection invalidates the result.
+          if (location.href !== pageURL) return null
+          return makeCreatorContext(creator, pageURL)
+        } catch (error) {
+          log.error('Error detecting creator context', error)
+          return null
+        }
+      },
+    },
+  })
 
   setPageDetectionHandler(async () => {
     if (location.href === currentURL) {

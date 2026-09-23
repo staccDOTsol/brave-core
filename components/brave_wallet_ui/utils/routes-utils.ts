@@ -49,10 +49,11 @@ export function isPersistableSessionRoute(
   }
   const routePath = getWalletLocationPathname(route)
   const isPersistableInPanel =
+    routePath === WalletRoutes.Creators
     /**
      * Insure that the Accounts route is an exact match.
      */
-    routePath === WalletRoutes.Accounts
+    || routePath === WalletRoutes.Accounts
     /**
      * or allow if it includes a trailing slash which is followed
      * by an accountId query param.

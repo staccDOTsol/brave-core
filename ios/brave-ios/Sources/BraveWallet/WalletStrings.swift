@@ -1301,6 +1301,13 @@ extension Strings {
       comment:
         "The title of the settings option inside the menu when user clicks the three dots button beside assets search button."
     )
+    public static let creators = NSLocalizedString(
+      "wallet.creators",
+      tableName: "BraveWallet",
+      bundle: .module,
+      value: "Creators",
+      comment: "Opens creator profiles, curation, and creator staking in the browser wallet."
+    )
     public static let helpCenter = NSLocalizedString(
       "wallet.helpCenter",
       tableName: "BraveWallet",

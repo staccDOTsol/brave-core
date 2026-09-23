@@ -240,7 +240,10 @@ public class BraveWalletPanel implements DialogInterface {
     }
 
     private boolean handleMenuItemClick(MenuItem item) {
-        if (item.getItemId() == R.id.action_lock_wallet) {
+        if (item.getItemId() == R.id.action_creators) {
+            dismiss();
+            WalletUtils.openCreatorWallet();
+        } else if (item.getItemId() == R.id.action_lock_wallet) {
             final KeyringService keyringService = mWalletModel.getKeyringService();
             if (keyringService != null) {
                 keyringService.lock();

@@ -404,6 +404,7 @@ export type TransactionPanelPayload = {
 }
 
 export enum WalletRoutes {
+  Creators = '/creators',
   // index
   CryptoPage = '/crypto/:category/:id?',
 
