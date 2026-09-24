@@ -334,10 +334,23 @@ configuration and produce the actual native application, not the prototype or
 simulator. The artifact directory includes SHA256SUMS and release-manifest.json.
 Missing or empty platform artifacts fail the job.
 
-FairCreators sets `brave_require_services_key=false` while keeping the optimized
-Release configuration. It does not provide a Brave services API key; features
-requiring that credential remain unavailable. The default upstream official
-build still requires a key. This setting only controls the local build check.
+FairCreators sets `enable_brave_ai_chat_service=false` and
+`enable_brave_speech_to_text=false` while keeping the optimized Release
+configuration. AI Chat is also excluded at compile time on desktop; mobile
+retains its required Swift/JNI bridge symbols, with the AI runtime feature off
+by default and a build-time gate preventing service creation or JNI actions.
+The normal availability checks hide the AI entry points. Disabled AI Chat
+and speech-to-text do not require their upstream service credentials. On Blink
+platforms Web Speech recognition requests are denied when compiled off, and
+runtime feature overrides cannot enable the Brave speech proxy. Native
+operating-system dictation is separate. `brave_require_services_key=false` also omits the general
+and Search service credentials. No empty-key Search signature is sent. Default
+upstream official builds still require the credentials for enabled services.
+
+The fast checks evaluate the four service-key GN declarations using the pinned
+Chromium GN revision. They exercise all five release plans without credentials
+and verify that upstream enabled builds still reject missing credentials. This
+isolated configuration test does not replace full GN generation or compilation.
 
 | Target | Artifact | Distribution |
 | --- | --- | --- |

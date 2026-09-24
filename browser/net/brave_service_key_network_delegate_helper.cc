@@ -56,14 +56,16 @@ int OnBeforeStartTransaction_BraveServiceKey(
 
   if (url.SchemeIs(url::kHttpsScheme)) {
     const bool is_search_domain = kSearchDomains.contains(url.host());
-    if (is_search_domain ||
-        std::any_of(
-            allowed_domains->begin(), allowed_domains->end(),
-            [&url](const auto& domain) { return url.DomainIs(domain); })) {
+    if (!std::string_view(BUILDFLAG(BRAVE_SERVICES_KEY)).empty() &&
+        (is_search_domain ||
+         std::any_of(
+             allowed_domains->begin(), allowed_domains->end(),
+             [&url](const auto& domain) { return url.DomainIs(domain); }))) {
       headers->SetHeader(kBraveServicesKeyHeader,
                          BUILDFLAG(BRAVE_SERVICES_KEY));
     }
-    if (is_search_domain) {
+    if (is_search_domain &&
+        !std::string_view(BUILDFLAG(SERVICE_KEY_SEARCH)).empty()) {
       const auto [_, signature] = brave_service_keys::GetAuthorizationHeader(
           BUILDFLAG(SERVICE_KEY_SEARCH), /*headers=*/{}, url, ctx->method(),
           {"(request-target)"});

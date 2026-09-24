@@ -19,7 +19,10 @@
 
 namespace ai_chat::features {
 
-BASE_FEATURE(kAIChat, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAIChat,
+             BUILDFLAG(ENABLE_BRAVE_AI_CHAT_SERVICE)
+                 ? base::FEATURE_ENABLED_BY_DEFAULT
+                 : base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kAIModelsDefaultKey{
     &kAIChat, "default_model", kChatAutomaticModelKey};
 const base::FeatureParam<std::string> kAIModelsPremiumDefaultKey{
@@ -60,7 +63,8 @@ const base::FeatureParam<base::TimeDelta> kRemoteModelsCacheTTL{
     &kAIChatRemoteModelsConfig, "cache_ttl", base::Days(1)};
 
 bool IsAIChatEnabled() {
-  return base::FeatureList::IsEnabled(features::kAIChat);
+  return BUILDFLAG(ENABLE_BRAVE_AI_CHAT_SERVICE) &&
+         base::FeatureList::IsEnabled(features::kAIChat);
 }
 
 BASE_FEATURE(kAIChatHistory, base::FEATURE_ENABLED_BY_DEFAULT);

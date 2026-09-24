@@ -3,13 +3,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 
+import("//brave/build/services.gni")
 import("//build/buildflag_header.gni")
 
 declare_args() {
   service_key_search = ""
 }
 
-if (is_official_build) {
+if (brave_require_services_key) {
   assert(service_key_search != "")
 }
 

@@ -5,6 +5,7 @@
 
 #include "chrome/browser/speech/chrome_speech_recognition_manager_delegate.h"
 
+#include "brave/components/speech_to_text/buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -22,6 +23,12 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
     base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,
     content::GlobalRenderFrameHostId global_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!BUILDFLAG(ENABLE_BRAVE_SPEECH_TO_TEXT)) {
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false, false));
+    return;
+  }
 
   if (auto* rph = content::RenderProcessHost::FromID(global_id.child_id)) {
     if (auto* profile = Profile::FromBrowserContext(rph->GetBrowserContext())) {
