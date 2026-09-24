@@ -63,8 +63,11 @@ const base::FeatureParam<base::TimeDelta> kRemoteModelsCacheTTL{
     &kAIChatRemoteModelsConfig, "cache_ttl", base::Days(1)};
 
 bool IsAIChatEnabled() {
-  return BUILDFLAG(ENABLE_BRAVE_AI_CHAT_SERVICE) &&
-         base::FeatureList::IsEnabled(features::kAIChat);
+#if BUILDFLAG(ENABLE_BRAVE_AI_CHAT_SERVICE)
+  return base::FeatureList::IsEnabled(features::kAIChat);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_BRAVE_AI_CHAT_SERVICE)
 }
 
 BASE_FEATURE(kAIChatHistory, base::FEATURE_ENABLED_BY_DEFAULT);

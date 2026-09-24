@@ -12,8 +12,11 @@
 namespace stt {
 
 bool IsSpeechToTextEnabled() {
-  return BUILDFLAG(ENABLE_BRAVE_SPEECH_TO_TEXT) &&
-         base::FeatureList::IsEnabled(kSttFeature);
+#if BUILDFLAG(ENABLE_BRAVE_SPEECH_TO_TEXT)
+  return base::FeatureList::IsEnabled(kSttFeature);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_BRAVE_SPEECH_TO_TEXT)
 }
 
 BASE_FEATURE(kSttFeature, "speech_to_text", base::FEATURE_DISABLED_BY_DEFAULT);
