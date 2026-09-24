@@ -18,6 +18,8 @@ to be integrated. No controller or new browser binary is deployed by this patch.
 - `common/mint-fees.ts`: mint allocation used by the wallet and accounting model.
 - `common/economics.mjs`: integer pool accounting and fee settlement model.
 - `common/bootstrap.mjs`: setup and intent idempotency model.
+- [Wizards settlement service](server/settlement/README.md): server-side Privy
+  signer, verified deployer SOL receipts, Relay routing and fanout delivery ledger.
 - `../brave_rewards/resources/creator_detection`: existing detector plus explicit
   creator-context bridge. Native automatic detection still needs a consumer.
 - [Protocol and integration contract](../../docs/creator_economy.md).
@@ -31,6 +33,11 @@ costs). Claim status changes withdrawal authority, not the creator allocation.
 The other half remains available to the burn/curation policy. Its exact split
 is not finalized. Redemption and transfer fees have no referral allocation here.
 
+100% of the deployer's realized SOL allocation is designated for the Wizards
+fanout on Robinhood Chain, after routing costs. The settlement worker accepts
+only verified payouts from a dedicated deployer distributor. The upstream
+controller, LST conversion and funded browser actions still need integration.
+
 ## Verification
 
 With Node 24.16 or newer, from the repository root:
@@ -38,6 +45,9 @@ With Node 24.16 or newer, from the repository root:
 ```sh
 node --test "components/creator_economy/common/*.test.mjs" "components/creator_economy/ci/*.test.mjs"
 python3 components/creator_economy/ci/check-resources.py
+cd components/creator_economy/server/settlement
+npm ci --ignore-scripts --no-audit --no-fund
+npm test
 ```
 
 The GitHub workflow runs accounting, retry, identity and library tests on Linux,
