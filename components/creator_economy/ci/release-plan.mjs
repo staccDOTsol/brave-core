@@ -3,6 +3,9 @@ export function releasePlan(target) {
     '--gn', 'blink_symbol_level:0', '--gn', 'v8_symbol_level:0',
     '--gn', 'enable_updater:false', '--gn', 'enable_update_notifications:false',
     '--gn', 'brave_require_services_key:false',
+    // Mobile requires Swift/JNI bridge symbols, but the service stays disabled.
+    '--gn', `enable_ai_chat:${target === 'ios' || target === 'android'}`,
+    '--gn', 'enable_brave_ai_chat_service:false', '--gn', 'enable_brave_speech_to_text:false',
     '--gn', 'should_generate_symbols:false']
   const plans = {
     macos: { args: [...shared, '--target_arch=arm64', '--gn', 'enable_sparkle:false',

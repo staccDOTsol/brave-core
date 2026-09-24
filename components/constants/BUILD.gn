@@ -4,16 +4,13 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import("//brave/build/config.gni")
+import("//brave/build/services.gni")
 import("//build/buildflag_header.gni")
 import("//build/util/branding.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 declare_args() {
   brave_services_key = ""
-
-  # Independent distributions can package optimized releases without access to
-  # Brave-operated services. This does not grant access to those services.
-  brave_require_services_key = is_official_build
 }
 
 if (brave_require_services_key) {

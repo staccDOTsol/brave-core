@@ -37,7 +37,7 @@ NetworkSpeechRecognitionEngineImpl::~NetworkSpeechRecognitionEngineImpl() =
     default;
 
 void NetworkSpeechRecognitionEngineImpl::StartRecognition() {
-  if (!base::FeatureList::IsEnabled(stt::kSttFeature)) {
+  if (!stt::IsSpeechToTextEnabled()) {
     return NetworkSpeechRecognitionEngineImpl_ChromiumImpl::StartRecognition();
   }
 

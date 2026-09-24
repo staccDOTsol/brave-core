@@ -48,7 +48,7 @@ void AddSpeechToTextBraveHeaders(network::ResourceRequest* request) {
 namespace stt {
 
 void OnBeforeURLRequest_SpoofSpeechToText(network::ResourceRequest* request) {
-  if (!base::FeatureList::IsEnabled(stt::kSttFeature)) {
+  if (!stt::IsSpeechToTextEnabled()) {
     return;
   }
   static constexpr char kSttPrefix[] =

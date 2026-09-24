@@ -7,7 +7,14 @@
 
 #include <string>
 
+#include "brave/components/speech_to_text/buildflags.h"
+
 namespace stt {
+
+bool IsSpeechToTextEnabled() {
+  return BUILDFLAG(ENABLE_BRAVE_SPEECH_TO_TEXT) &&
+         base::FeatureList::IsEnabled(kSttFeature);
+}
 
 BASE_FEATURE(kSttFeature, "speech_to_text", base::FEATURE_DISABLED_BY_DEFAULT);
 

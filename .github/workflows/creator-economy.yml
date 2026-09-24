@@ -5,6 +5,11 @@ on:
     branches: ['master', 'codex/**']
     paths:
       - 'components/creator_economy/**'
+      - 'build/services.gni'
+      - 'components/constants/BUILD.gn'
+      - 'components/ai_chat/core/common/buildflags/**'
+      - 'components/brave_search/common/buildflags/**'
+      - 'components/speech_to_text/**'
       - 'build/commands/lib/repositories*'
       - 'app/theme/**'
       - 'build/mac/**'
@@ -22,6 +27,11 @@ on:
   pull_request:
     paths:
       - 'components/creator_economy/**'
+      - 'build/services.gni'
+      - 'components/constants/BUILD.gn'
+      - 'components/ai_chat/core/common/buildflags/**'
+      - 'components/brave_search/common/buildflags/**'
+      - 'components/speech_to_text/**'
       - 'build/commands/lib/repositories*'
       - 'app/theme/**'
       - 'build/mac/**'
@@ -58,6 +68,11 @@ jobs:
           sparse-checkout: |
             build/commands/lib
             components/creator_economy
+            components/constants
+            components/ai_chat/core/common/buildflags
+            components/brave_origin/buildflags
+            components/brave_search/common/buildflags
+            components/speech_to_text
             components/brave_wallet_ui
             components/resources
             android/java/brave-res
@@ -70,6 +85,15 @@ jobs:
           node-version: '24'
       - name: Verify mint referrals, accounting, creator library and detection
         run: node --test "components/creator_economy/common/*.test.mjs" "components/creator_economy/ci/*.test.mjs"
+      - name: Check release service configuration with GN
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          curl --fail --location --retry 3 --output "$RUNNER_TEMP/creator-gn.zip" 'https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+/git_revision:150a9d6ba0aa7f407aa4feeabc5f03ce9aa7e04b'
+          printf '%s  %s\n' '7f05124cf22efb2e4a38f50cc9efcda91f11c2a271fbf1f37a6f10a73a140cae' "$RUNNER_TEMP/creator-gn.zip" | sha256sum --check -
+          unzip -q "$RUNNER_TEMP/creator-gn.zip" gn -d "$RUNNER_TEMP/creator-gn"
+          chmod +x "$RUNNER_TEMP/creator-gn/gn"
+          python3 components/creator_economy/ci/check-service-build.py --gn "$RUNNER_TEMP/creator-gn/gn"
       - name: Type-check creator wallet models
         working-directory: ${{ runner.temp }}
         run: npm exec --yes --package=typescript@5.9.3 -- tsc --noEmit --strict --target ES2019 --lib ESNext,DOM --module ESNext --moduleResolution bundler "${{ github.workspace }}/components/creator_economy/common/mint-fees.ts" "${{ github.workspace }}/components/brave_wallet_ui/common/creator-economy/creator-library.ts"

@@ -7,6 +7,9 @@ test('independent releases keep Release optimization without Brave service crede
     const { args } = releasePlan(target)
     assert.equal(args[0], 'Release')
     assert.ok(args.includes('brave_require_services_key:false'))
+    assert.ok(args.includes(`enable_ai_chat:${target === 'ios' || target === 'android'}`))
+    assert.ok(args.includes('enable_brave_ai_chat_service:false'))
+    assert.ok(args.includes('enable_brave_speech_to_text:false'))
     assert.ok(!args.some((arg) => arg.startsWith('brave_services_key:')))
     assert.ok(!args.includes('is_official_build:false'))
   }

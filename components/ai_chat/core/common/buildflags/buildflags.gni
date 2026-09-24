@@ -10,6 +10,8 @@ declare_args() {
 }
 
 declare_args() {
+  # Mobile links its Swift/JNI bridges even when the service is unavailable.
+  enable_brave_ai_chat_service = enable_ai_chat
   enable_brave_ai_chat_agent_profile = enable_ai_chat && !is_android
   enable_ai_chat_tab_management_tool = enable_ai_chat && !is_android
 }
