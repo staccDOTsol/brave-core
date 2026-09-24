@@ -163,6 +163,15 @@ per creator/mint, and preserve creator credits through claims and fee changes.
 Privy wallets sign authorized user actions; they do not replace the on-chain
 escrow ledger or proof of creator ownership.
 
+The deployer's chosen allocation sends 100% of its realized SOL proceeds to the
+Wizards fanout on Robinhood Chain. The separate [settlement service](../components/creator_economy/server/settlement/README.md)
+validates finalized payouts from a dedicated deployer-only source, reserves each
+batch, routes SOL to a Privy WETH receiver through Relay, and verifies an exact
+forward transfer to the existing 8,010-share fanout. The receiver preserves
+native-ETH refund access. Creator liabilities and pool backing never enter this
+budget. This service does not implement the upstream controller or conversion
+of deployer LST shares into SOL, and no funded payout is claimed by its tests.
+
 For backing `A`, outstanding shares `S`, mint input `d`:
 
 ```text
@@ -260,9 +269,10 @@ supply claimed status or balances.
 
 Existing self-custody keys stay in their existing model. Users enter the new
 custodial account flow explicitly. Privy application secrets remain on the
-backend, never in browser/mobile bundles or CI artifacts. A read-only Privy
-wallet-list request succeeded during discovery; no wallet was created and no
-transaction signed. That does not constitute a finished wallet integration.
+backend, never in browser/mobile bundles or CI artifacts. Privy's Node SDK
+successfully lists wallets with the configured application credentials. The
+settlement service can provision dedicated app-controlled treasuries; this does
+not constitute a finished custodial user-wallet or funded browser integration.
 
 ## Existing permissionless router
 

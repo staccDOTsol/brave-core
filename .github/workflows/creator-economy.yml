@@ -85,6 +85,12 @@ jobs:
           node-version: '24'
       - name: Verify mint referrals, accounting, creator library and detection
         run: node --test "components/creator_economy/common/*.test.mjs" "components/creator_economy/ci/*.test.mjs"
+      - name: Install settlement service dependencies
+        working-directory: components/creator_economy/server/settlement
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify settlement accounting, retries and transaction validation
+        working-directory: components/creator_economy/server/settlement
+        run: npm test
       - name: Check release service configuration with GN
         if: runner.os == 'Linux'
         shell: bash
