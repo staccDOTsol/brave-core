@@ -1,7 +1,7 @@
 // Copyright (c) 2026 The Brave Authors. All rights reserved.
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. https://mozilla.org/MPL/2.0/.
-import { statfsSync, writeFileSync, createWriteStream, appendFileSync } from 'node:fs'
+import { statfsSync, writeFileSync, createWriteStream, appendFileSync, readFileSync } from 'node:fs'
 import { spawn, execFileSync } from 'node:child_process'
 import { availableParallelism, totalmem } from 'node:os'
 import { assessCapacity } from './native-capacity.mjs'
@@ -54,6 +54,13 @@ try {
     record.phase = 'initialize'
     writeFileSync('creator-build-record.json', JSON.stringify(record, null, 2))
     await run(pnpm, ['run', 'init', '--no-history', ...args])
+    const lastChange = readFileSync('../build/util/LASTCHANGE', 'utf8')
+    const commitTime = Number(readFileSync('../build/util/LASTCHANGE.committime', 'utf8').trim())
+    if (!lastChange.split(/\r?\n/).includes(`LASTCHANGE=${record.revision}`)
+        || !Number.isInteger(commitTime) || commitTime < 946684800 || commitTime > 0xffffffff) {
+      throw new Error('LASTCHANGE must identify the checked-out fork revision with a valid commit time')
+    }
+    record.commitTime = commitTime
     if (process.platform === 'linux') {
       await run('sudo', ['../build/install-build-deps.sh', '--no-prompt',
         ...(target === 'android' ? ['--android'] : [])])

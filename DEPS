@@ -160,13 +160,14 @@ hooks = [
     'action': ['vpython3', 'script/generate_licenses.py'],
   },
   {
-    # Overwrite Chromium's LASTCHANGE using the latest Brave version commit.
+    # FairCreators checkouts can be shallow and have no Brave version commit.
+    # Use the actual fork revision and its timestamp, rather than epoch zero.
     'name': 'brave_lastchange',
     'pattern': '.',
     'action': ['python3', '../build/util/lastchange.py',
                '--output', '../build/util/LASTCHANGE',
                '--source-dir', '.',
-               '--filter', '^[0-9]\{{1,\}}\.[0-9]\{{1,\}}\.[0-9]\{{1,\}}$'],
+               '--filter', '.*'],
   },
   {
     # Generate //brave/build/version.gni from chrome/VERSION.
