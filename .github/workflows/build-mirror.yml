@@ -1,0 +1,79 @@
+name: build mirror browser
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Single target to build (empty = all in matrix)"
+        required: false
+        default: ""
+  push:
+    branches: [crekk-mirror]
+    paths:
+      - "components/crekk_mirror/**"
+      - "browser/extensions/**"
+      - "brave_paks.gni"
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.runs-on }}
+    timeout-minutes: 720
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: mac-arm64
+            runs-on: macos-15
+            target: Release
+          - name: linux-x64
+            runs-on: [self-hosted, linux, x64, mirror-builder]
+            target: Release
+          # add when runners exist:
+          # - name: win-x64
+          #   runs-on: [self-hosted, windows, x64, mirror-builder]
+          #   target: Release
+          # - name: mac-x64
+          #   runs-on: [self-hosted, macos, x64, mirror-builder]
+          #   target: Release
+    steps:
+      - name: checkout brave-core
+        uses: actions/checkout@v4
+        with:
+          path: src/brave
+
+      - name: depot_tools
+        run: |
+          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          echo "$GITHUB_WORKSPACE/depot_tools" >> $GITHUB_PATH
+
+      - name: gclient sync
+        run: |
+          cd src
+          gclient config --name=src https://github.com/staccDOTsol/brave-core.git
+          gclient sync --with_branch_heads --with_tags -D --delete_unversioned_trees
+
+      - name: sccache
+        uses: mozilla-actions/sccache-action@v0.0.9
+        with:
+          version: v0.10.0
+
+      - name: build
+        env:
+          SCCACHE_GHA_ENABLED: "true"
+        run: |
+          cd src/brave
+          npm install
+          npm run build -- --target=${{ matrix.target }} ${{ github.event.inputs.extra_build_flags }}
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mirror-${{ matrix.name }}
+          path: |
+            src/out/${{ matrix.target }}/Brave-Browser.dmg
+            src/out/${{ matrix.target }}/brave-browser.dmg
+            src/out/${{ matrix.target }}/*.deb
+            src/out/${{ matrix.target }}/*.zip
+            src/out/${{ matrix.target }}/*.exe
+          if-no-files-found: warn
