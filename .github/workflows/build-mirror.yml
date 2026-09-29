@@ -36,6 +36,12 @@ jobs:
           # - name: mac-x64
           #   runs-on: [self-hosted, macos, x64, mirror-builder]
           #   target: Release
+          # - name: android-arm64
+          #   runs-on: [self-hosted, linux, x64, mirror-builder]
+          #   target: Release android-arm64
+          # - name: ios-arm64
+          #   runs-on: [self-hosted, macos, arm64, mirror-builder]
+          #   target: Release ios
     steps:
       - name: checkout brave-core
         uses: actions/checkout@v4
