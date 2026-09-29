@@ -13,6 +13,11 @@ on:
       - "components/crekk_mirror/**"
       - "browser/extensions/**"
       - "brave_paks.gni"
+      - ".github/workflows/build-mirror.yml"
+
+env:
+  # chromium rev the fork builds against (154.0.8037.58, synced 2026-09-23)
+  CHROMIUM_REV: a654841425914cbb703a2931e07b70a83aedbafd
 
 jobs:
   build:
@@ -47,17 +52,40 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: src/brave
+          ref: ${{ github.ref }}
 
       - name: depot_tools
         run: |
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
           echo "$GITHUB_WORKSPACE/depot_tools" >> $GITHUB_PATH
 
-      - name: gclient sync
+      - name: gclient config + sync
         run: |
-          cd src
-          gclient config --name=src https://github.com/staccDOTsol/brave-core.git
-          gclient sync --with_branch_heads --with_tags -D --delete_unversioned_trees
+          cat > .gclient <<EOF
+          solutions = [
+            {
+              "managed": False,
+              "name": "src",
+              "url": "https://chromium.googlesource.com/chromium/src.git",
+              "custom_deps": {
+                "src/testing/libfuzzer/fuzzers/wasm_corpus": None,
+                "src/third_party/chromium-variations": None
+              },
+              "custom_vars": {
+                "checkout_pgo_profiles": False,
+                "checkout_clang_coverage_tools": True,
+                "checkout_clangd": True
+              }
+            },
+            {
+              "managed": False,
+              "name": "src/brave",
+              "url": "https://github.com/staccDOTsol/brave-core.git"
+            }
+          ]
+          target_cpu = ["arm64"]
+          EOF
+          gclient sync -D --revision src@$CHROMIUM_REV --with_branch_heads
 
       - name: sccache
         uses: mozilla-actions/sccache-action@v0.0.9
