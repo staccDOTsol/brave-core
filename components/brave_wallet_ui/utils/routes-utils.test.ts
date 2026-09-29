@@ -84,9 +84,9 @@ describe('makePortfolioNftCollectionRoute', () => {
 })
 
 describe('isPersistableSessionRoute', () => {
-  it('restores the creator route in the page and both panel modes', () => {
+  it('restores the creator route on the page and side panel, not the popup', () => {
     expect(isPersistableSessionRoute(WalletRoutes.Creators, false, false)).toBe(true)
-    expect(isPersistableSessionRoute(WalletRoutes.Creators, true, false)).toBe(true)
+    expect(isPersistableSessionRoute(WalletRoutes.Creators, true, false)).toBe(false)
     expect(isPersistableSessionRoute(WalletRoutes.Creators, true, true)).toBe(true)
     expect(isPersistableSessionRoute('/creators-not-a-route', false, false)).toBe(false)
   })

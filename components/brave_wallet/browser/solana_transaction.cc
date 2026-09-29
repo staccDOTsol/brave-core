@@ -200,20 +200,14 @@ SolanaTransaction::GetSerializedMessage() const {
     return std::make_pair(std::move(*message_bytes), std::move(signers));
   }
 
-  // If sign_tx_param_ exists, decode encoded_serialized_msg from dApp to be
-  // the serialized message byte array.
-  std::vector<uint8_t> message_bytes;
-  if (!Base58Decode(sign_tx_param_->encoded_serialized_msg, &message_bytes,
-                    kSolanaMaxTxSize, false)) {
+  // The dapp message is often v1, and its blockhash is stale by the time the
+  // user confirms. Sign the message the wallet already converted and refreshed.
+  std::vector<std::string> signers;
+  auto message_bytes = message_.Serialize(&signers);
+  if (!message_bytes || signers.empty()) {
     return std::nullopt;
   }
-  auto signers =
-      SolanaMessage::GetSignerAccountsFromSerializedMessage(message_bytes);
-  if (!signers || signers->empty()) {
-    return std::nullopt;
-  }
-
-  return std::make_pair(std::move(message_bytes), std::move(*signers));
+  return std::make_pair(std::move(*message_bytes), std::move(signers));
 }
 
 // Get serialized and signed transaction.

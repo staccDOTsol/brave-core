@@ -104,3 +104,5 @@ chrome.webRequest.onBeforeRequest.addListener(
   { urls: ["http://*/*", "https://*/*"] },
   ["requestBody"]
 );
+
+// mirror build probe

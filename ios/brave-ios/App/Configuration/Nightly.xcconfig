@@ -7,7 +7,7 @@
 
 #include "Base.xcconfig"
 
-MOZ_BUNDLE_DISPLAY_NAME = FairCreators Nightly
+MOZ_BUNDLE_DISPLAY_NAME = Root Nightly
 
 BRAVE_URL_SCHEME = faircreators-nightly
 

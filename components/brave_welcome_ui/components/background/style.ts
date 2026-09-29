@@ -5,114 +5,18 @@
 
 import styled from 'styled-components'
 
-import hillBgUrl from 'gen/brave/components/brave_welcome_ui/hill.webp'
-import pyramidBgUrl from 'gen/brave/components/brave_welcome_ui/pyramid.webp'
-
 export const Box = styled.div`
+  min-height: 100vh;
+  background: radial-gradient(ellipse at 50% 0, #254d3c 0, #171717 45%, #101115 80%);
+  color: #f7f3e8;
+  --leo-color-button-background: #8fe1bd;
+  --leo-color-schemes-on-primary: #101115;
   .content-box {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    z-index: 999;
-
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding: 130px 24px 48px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-
-  .background-img {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    object-fit: cover;
-    opacity: 0;
-    transition: opacity .2s ease-in;
-
-    &.is-visible {
-      opacity: 1;
-    }
-  }
-
-  .hills-container {
-    position: fixed;
-    width: 100vw;
-    height: 100%;
-    z-index: 2;
-    opacity: 0;
-  }
-
-  .stars-container {
-    position: fixed;
-    width: 100vw;
-    height: 100%;
-    z-index: 50;
-    opacity: 0;
-
-    svg {
-      width: 100%;
-      height: auto;
-      position: absolute;
-      transform-origin: center;
-    }
-
-    .stars01 {
-      bottom: 0;
-      transform: scale(1.14);
-      filter: blur(3px);
-    }
-
-    .stars02 {
-      top: 10%;
-    }
-
-    .stars03 {
-      top: 15%;
-    }
-
-    .stars04 {
-      top: 30%;
-      transform: scale(0.8);
-      opacity: 0;
-    }
-  }
-
-  .hills-base {
-    width: 100%;
-    height: 100%;
-    background: url(${hillBgUrl}) no-repeat;
-    background-size: contain;
-    background-position-y: bottom;
-    position: absolute;
-    top: 0;
-
-    &.hills01 {
-      z-index: 4;
-      transform-origin: bottom;
-      background-position-x: -320px;
-      transform: scale(1.5);
-    }
-
-    &.hills02 {
-      z-index: 3;
-      transform-origin: bottom right;
-    }
-
-    &.hills03 {
-      z-index: 2;
-      transform-origin: bottom right;
-    }
-  }
-
-  .pyramid {
-    width: 100%;
-    height: 100%;
-    background: url(${pyramidBgUrl}) no-repeat;
-    background-size: 20%;
-    background-position: bottom right;
-    position: absolute;
-    top: 0;
-    z-index: 1;
-    transform: translateX(20%);
-   }
 `

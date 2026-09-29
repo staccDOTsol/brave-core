@@ -7,8 +7,11 @@ import { PublicKey } from '@solana/web3.js'
 import { getAddress } from 'viem'
 
 export const POLICY = Object.freeze({
-  version: 'wizards-deployer-v1',
+  version: 'deployer-wizards-buyburn-v2',
   deployerShareBps: 10_000,
+  wizardsShareBps: 5_000,
+  buyBurnShareBps: 5_000,
+  buyBurnCreator: 'https://x.com/staccoverflow',
   originChainId: 792703809,
   destinationChainId: 4663,
   sol: '11111111111111111111111111111111',

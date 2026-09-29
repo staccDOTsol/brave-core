@@ -53,7 +53,7 @@ def BraveModifyPartsForSigning(parts, config):
         | CodeSignOptions.LIBRARY_VALIDATION | CodeSignOptions.KILL)
 
     # Add Sparkle
-    if not development:
+    if not development and not config.invoker.args.disable_sparkle:
         # Add Sparkle binaries
         parts['sparkle-framework-fileop'] = CodeSignedProduct(
             '{0.framework_dir}/Versions/{0.version}/Frameworks/Sparkle.framework/Versions/A/Resources/Autoupdate.app/Contents/MacOS/fileop'  # pylint: disable=line-too-long

@@ -6,7 +6,7 @@
 
 #include "Base.xcconfig"
 
-MOZ_BUNDLE_DISPLAY_NAME = FairCreatorsBeta
+MOZ_BUNDLE_DISPLAY_NAME = RootBeta
 
 BRAVE_URL_SCHEME = faircreators-beta
 

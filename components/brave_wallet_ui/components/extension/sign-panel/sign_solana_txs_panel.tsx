@@ -62,6 +62,26 @@ interface Props {
   queueNumber: number
 }
 
+function tradeAmount(request: BraveWallet.SignSolTransactionsRequest): string {
+  for (const tx of request.txDatas) {
+    for (const instruction of tx.instructions) {
+      const data = instruction.data
+      if (
+        instruction.programId !== '11111111111111111111111111111111'
+        || data.length < 12
+        || data[0] !== 2
+      ) {
+        continue
+      }
+      let lamports = 0
+      for (let i = 0; i < 8; i++) lamports += data[4 + i] * 2 ** (8 * i)
+      const sol = lamports / 1_000_000_000
+      return `Approve ${sol} SOL`
+    }
+  }
+  return ''
+}
+
 // TODO: broken article link
 // https://github.com/brave/brave-browser/issues/39708
 const onClickLearnMore = () => {
@@ -141,7 +161,7 @@ export const SignSolanaTxsPanel = ({
         textColor='primary'
         variant='large.semibold'
       >
-        {getLocale(S.BRAVE_WALLET_SIGN_TRANSACTION_TITLE)}
+        {tradeAmount(selectedRequest) || getLocale(S.BRAVE_WALLET_SIGN_TRANSACTION_TITLE)}
       </PanelTitle>
       {signStep === SignDataSteps.SignRisk && (
         <WarningBox warningType='danger'>

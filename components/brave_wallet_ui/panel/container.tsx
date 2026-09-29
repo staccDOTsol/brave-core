@@ -115,46 +115,28 @@ function Container() {
   const { data: addChainRequest } = useGetPendingAddChainRequestQuery()
   const { data: switchChainRequest } = useGetPendingSwitchChainRequestQuery()
   const { data: decryptRequest } = useGetPendingDecryptRequestQuery()
-  const {
-    data: getEncryptionPublicKeyRequest,
-    isLoading: isLoadingPendingPublicKeyRequest,
-  } = useGetPendingGetEncryptionPublicKeyRequestQuery()
-  const {
-    data: signSolTransactionsRequests,
-    isLoading: isLoadingSignSolTransactionsRequests,
-  } = useGetPendingSignSolTransactionsRequestsQuery()
-  const {
-    data: signCardanoTransactionRequests,
-    isLoading: isLoadingSignCardanoTransactionRequests,
-  } = useGetPendingSignCardanoTransactionRequestsQuery()
-  const { data: signMessageData, isLoading: isLoadingSignMessageData } =
-    useGetPendingSignMessageRequestsQuery()
-  const {
-    data: signMessageErrorData,
-    isLoading: isLoadingSignMessageErrorData,
-  } = useGetPendingSignMessageErrorsQuery()
-  const { data: addTokenRequests = [], isLoading: isLoadingAddTokenRequests } =
+  const { data: getEncryptionPublicKeyRequest } =
+    useGetPendingGetEncryptionPublicKeyRequestQuery()
+  const { data: signSolTransactionsRequests } =
+    useGetPendingSignSolTransactionsRequestsQuery()
+  const { data: signCardanoTransactionRequests } =
+    useGetPendingSignCardanoTransactionRequestsQuery()
+  const { data: signMessageData } = useGetPendingSignMessageRequestsQuery()
+  const { data: signMessageErrorData } = useGetPendingSignMessageErrorsQuery()
+  const { data: addTokenRequests = [] } =
     useGetPendingTokenSuggestionRequestsQuery()
-  const {
-    selectedPendingTransaction,
-    isLoading: isLoadingPendingTransactions,
-  } = useSelectedPendingTransaction()
-
-  // computed
-  const isLoadingPendingActions =
-    isLoadingPendingTransactions
-    || isLoadingPendingPublicKeyRequest
-    || isLoadingSignSolTransactionsRequests
-    || isLoadingSignCardanoTransactionRequests
-    || isLoadingSignMessageData
-    || isLoadingSignMessageErrorData
-    || isLoadingAddTokenRequests
+  const { selectedPendingTransaction } = useSelectedPendingTransaction()
 
   const pendingOrConfirmingTransaction =
     selectedPendingTransaction ?? submittingTransaction
 
-  // render
-  if (!hasInitialized || (isLoadingPendingActions && !isSidePanel)) {
+  // Pending-action queries stay loading while an approval is already on screen.
+  // That ring was hiding Confirm. Wait only until the wallet itself is ready.
+  if (
+    !hasInitialized
+    && !pendingOrConfirmingTransaction
+    && selectedPanel !== 'transactionStatus'
+  ) {
     return (
       <PanelWrapper>
         <FullScreenWrapper>

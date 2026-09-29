@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grit-part>
+  <message name="IDS_BRAVE_WALLET_CREATORS_CLAIM_CONTINUE" desc="Open the Root website to verify creator ownership" formatter_data="webui=Wallet">Continue securely on Root</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_CLAIM_STEPS" desc="Root creator discovery and claim interface" formatter_data="webui=Wallet">Sign in, connect your social account, and confirm the profile returned by the provider. Your verification is saved to your Root account. Pool activation and fee withdrawals are separate steps.</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_CLAIM" desc="Root creator discovery and claim interface" formatter_data="webui=Wallet">Claim this profile</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_ATTRIBUTION_NOTE" desc="Root creator discovery and claim interface" formatter_data="webui=Wallet">Ape opens a buy. The first buy initializes the creator LST if it is missing: one Sanctum validator, metadata, and 6.9% mint, burn, and transfer fees. Sell is available once you hold a balance.</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_SELECTED_POST" desc="Root creator discovery and claim interface" formatter_data="webui=Wallet">Selected post</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_BROWSE_DESCRIPTION" desc="Root creator discovery and claim interface" formatter_data="webui=Wallet">Look for the Root control beside supported profiles and posts. Open a creator or save an original post without copying its link.</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_BROWSE_TITLE" desc="Root creator discovery and claim interface" formatter_data="webui=Wallet">Discover creators as you browse</message>
   <message name="IDS_BRAVE_WALLET_CREATORS" desc="Title and navigation entry for creator profiles in the wallet" formatter_data="webui=Wallet">Creators</message>
   <message name="IDS_BRAVE_WALLET_CREATORS_INTRO" desc="Introductory description of creator following and content curation" formatter_data="webui=Wallet">Your creators. Your curation. Follow profiles and collect the content you want to support.</message>
   <message name="IDS_BRAVE_WALLET_CREATORS_SAVE_ERROR" desc="Error shown when a creator bookmark or curation cannot be persisted" formatter_data="webui=Wallet">Could not save. Check the link and available browser storage.</message>
@@ -14,6 +21,8 @@
   <message name="IDS_BRAVE_WALLET_CREATORS_SELECT" desc="Label for the creator selector for content attribution" formatter_data="webui=Wallet">Creator</message>
   <message name="IDS_BRAVE_WALLET_CREATORS_CONTENT_URL" desc="Label for a public HTTPS content URL input" formatter_data="webui=Wallet">Content URL</message>
   <message name="IDS_BRAVE_WALLET_CREATORS_SAVE_CONTENT" desc="Button to save a local content curation" formatter_data="webui=Wallet">Save content</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_APE" desc="Button to buy a creator post, initializing the LST on the first buy" formatter_data="webui=Wallet">Ape</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_SELL" desc="Button to sell a creator post balance" formatter_data="webui=Wallet">Sell</message>
   <message name="IDS_BRAVE_WALLET_CREATORS_CURATION_NOTE" desc="Description distinguishing a local curation bookmark from a financial reward" formatter_data="webui=Wallet">Saved content is private to this browser profile. Reward eligibility requires verified attribution and a settled payment.</message>
   <message name="IDS_BRAVE_WALLET_CREATORS_REMOVE_CONTENT" desc="Button to remove a saved content curation" formatter_data="webui=Wallet">Remove content</message>
   <message name="IDS_BRAVE_WALLET_CREATORS_FEES_TITLE" desc="Heading for the mint referral fee calculation" formatter_data="webui=Wallet">Mint fee breakdown</message>
@@ -26,12 +35,12 @@
   <message name="IDS_BRAVE_WALLET_CREATORS_CREATOR_SHARE" desc="Label for the creator half of the mint referral allocation before payout costs" formatter_data="webui=Wallet">Creator entitlement</message>
   <message name="IDS_BRAVE_WALLET_CREATORS_MANAGER_SHARE" desc="Label for the manager allocation available to the burn and curation policy" formatter_data="webui=Wallet">Remaining fee budget</message>
   <message name="IDS_BRAVE_WALLET_CREATORS_ESCROW_NOTE" desc="Description of creator fee entitlement and unclaimed escrow" formatter_data="webui=Wallet">The creator share accrues before or after a profile claim. Unclaimed amounts stay reserved for that creator until ownership is verified. Payouts can incur transfer or redemption fees.</message>
-  <message name="IDS_BRAVE_WALLET_CREATORS_FUNDING_STATUS" desc="Current availability of creator staking and custody services" formatter_data="webui=Wallet">This is a fee illustration in LST shares, not a funded quote. Creator pool setup, custody sign-in and payouts are not connected in this build.</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_FUNDING_STATUS" desc="Current availability of creator staking and custody services" formatter_data="webui=Wallet">Mint, burn, and transfer fees are each 6.9%. The first buy creates the single-validator Sanctum pool and its metadata when that creator LST does not exist yet.</message>
   <message name="IDS_BRAVE_WALLET_CREATORS_MENU" desc="Android wallet panel menu entry for creator profiles" formatter_data="android_java">Creators</message>
 
-  <message name="IDS_TOOLTIP_WALLET" desc="Tooltip to acccess the Brave Wallet">Brave Wallet</message>
-  <message name="IDS_ACCNAME_BRAVE_WALLET_BUTTON" desc="The accessible name for the Brave Wallet bubble.">Brave Wallet</message>
-  <message name="IDS_BRAVE_WALLET" desc="The name of the feature Brave Wallet" formatter_data="webui=Wallet">Brave Wallet</message>
+  <message name="IDS_TOOLTIP_WALLET" desc="Tooltip to acccess the Brave Wallet">Root Wallet</message>
+  <message name="IDS_ACCNAME_BRAVE_WALLET_BUTTON" desc="The accessible name for the Brave Wallet bubble.">Root Wallet</message>
+  <message name="IDS_BRAVE_WALLET" desc="The name of the feature Brave Wallet" formatter_data="webui=Wallet">Root Wallet</message>
   <message name="IDS_BRAVE_WALLET_ACCOUNT" desc="General token">account</message>
   <message name="IDS_BRAVE_WALLET_CHAIN_ID" desc="General token" formatter_data="webui=Wallet">Chain ID</message>
   <message name="IDS_BRAVE_WALLET_DOMAIN" desc="General token">domain</message>
@@ -470,7 +479,7 @@
   <message name="IDS_BRAVE_WALLET_TRANSACTION_GAS_LIMIT" desc="Transaction gas limit" formatter_data="webui=Wallet">Gas Limit</message>
   <message name="IDS_BRAVE_WALLET_TRANSACTION_GAS_PREMIUM" desc="Transaction gas premium" formatter_data="webui=Wallet">Gas Premium</message>
   <message name="IDS_BRAVE_WALLET_TRANSACTION_GAS_FEE_CAP" desc="Transaction gas fee cap" formatter_data="webui=Wallet">Gas Fee Cap</message>
-  <message name="IDS_BRAVE_WALLET_PANEL_TITLE" desc="Brave Wallet panel title" formatter_data="webui=Wallet">Brave Wallet</message>
+  <message name="IDS_BRAVE_WALLET_PANEL_TITLE" desc="Brave Wallet panel title" formatter_data="webui=Wallet">Root Wallet</message>
   <message name="IDS_BRAVE_WALLET_PANEL_CONNECTED" desc="Brave Wallet panel connected status" formatter_data="webui=Wallet">Connected</message>
   <message name="IDS_BRAVE_WALLET_SITE_PERMISSIONS_ACCOUNTS" desc="Site Permissions panel accounts connected" formatter_data="webui=Wallet"><ph name="NUMBER_OF_ACCOUNTS"><ex>5</ex>$1</ph> accounts connected</message>
   <message name="IDS_BRAVE_WALLET_SITE_PERMISSIONS_DISCONNECT" desc="Site Permissions panel disconnect from site" formatter_data="webui=Wallet">Disconnect</message>
@@ -1196,7 +1205,7 @@
   <message name="IDS_BRAVE_WALLET_GAS_FEE_TOOLTIP" desc="Tooltip text for gas fee" formatter_data="webui=Wallet">This gas fee will replace the original.</message>
   <message name="IDS_BRAVE_WALLET_GAS_FEE_TOOLTIP_DESCRIPTION" desc="Tooltip description for gas fee" formatter_data="webui=Wallet">This will create a new transaction with a new gas fee to override and cancel the pending one. A cancellation can only be attempted if the transaction is still pending on the network.</message>
   <message name="IDS_BRAVE_WALLET_SPEED_PRIORITY" desc="Label for speed priority" formatter_data="webui=Wallet">Speed priority</message>
-  <message name="IDS_WALLET_EIP6963_PROVIDER_NAME" desc="Provider name which will be return when announce ethereum provider">Brave Wallet</message>
+  <message name="IDS_WALLET_EIP6963_PROVIDER_NAME" desc="Provider name which will be return when announce ethereum provider">Root Wallet</message>
   <message name="IDS_BRAVE_WALLET_RECEIVE" desc="Receive asset event title" formatter_data="webui=Wallet">Receive</message>
   <message name="IDS_BRAVE_WALLET_FROM" desc="From address label" formatter_data="webui=Wallet">From</message>
   <message name="IDS_BRAVE_WALLET_UPHOLD" desc="Brave Rewards Uphold provider" formatter_data="webui=Wallet">Uphold</message>

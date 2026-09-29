@@ -3,10 +3,14 @@
 // License, v. 2.0. https://mozilla.org/MPL/2.0/.
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {
+import { registerHooks } from 'node:module'
+registerHooks({ resolve(specifier, context, next) {
+  return next(specifier.endsWith('/social-context') ? `${specifier}.ts` : specifier, context)
+} })
+const {
   EMPTY_LIBRARY, creatorFromURL, contentFromURL, followCreator,
   curateContent, removeCreator, readLibrary,
-} from '../../brave_wallet_ui/common/creator-economy/creator-library.ts'
+} = await import('../../brave_wallet_ui/common/creator-economy/creator-library.ts')
 
 test('profile aliases are canonicalized without inventing stable identities', () => {
   const creator = creatorFromURL('https://twitter.com/Example?ref=tracking')

@@ -1,4 +1,4 @@
-# Creator browser
+# Root creator browser
 
 The creator surface is part of Brave Wallet at `brave://wallet/creators`.
 The wallet root opens it. Desktop navigation, Android wallet panel and setup,
@@ -20,9 +20,29 @@ to be integrated. No controller or new browser binary is deployed by this patch.
 - `common/bootstrap.mjs`: setup and intent idempotency model.
 - [Wizards settlement service](server/settlement/README.md): server-side Privy
   signer, verified deployer SOL receipts, Relay routing and fanout delivery ledger.
-- `../brave_rewards/resources/creator_detection`: existing detector plus explicit
-  creator-context bridge. Native automatic detection still needs a consumer.
+- `common/social-context.ts`: canonical profile and content links for X,
+  YouTube, Instagram, TikTok, Facebook, Reddit, Twitch, Threads, LinkedIn and
+  Bluesky. Page observations are not proof of authorship or account ownership.
+- `../brave_extension/extension/brave_extension/creator-overlays.ts`: desktop
+  feed/profile controls that hand the selected context to the native wallet.
 - [Protocol and integration contract](../../docs/creator_economy.md).
+
+## Social overlays and claims
+
+The desktop component extension adds creator controls to recognized profile,
+post and feed cards on the ten platforms above. Explicit clicks open the native
+creator library with canonical URLs. Detection sends no page content to a server,
+and incognito tabs do not receive these controls. Ambiguous cards with multiple
+post identities are skipped. Dynamic/recycled feed cards are re-evaluated.
+
+These controls currently support following and saving content locally. Claim
+buttons explain the ownership flow and disclose that verification is not yet
+connected. A claim must bind a server-verified provider account ID and confirmed
+wallet to the existing creator record; neither a page label nor a saved URL can
+establish ownership. Ordinary Google login does not verify a YouTube channel.
+The native iOS/Android content-script injection paths are not wired by this
+desktop extension. URL fixtures and DOM tests do not replace live platform
+verification or mobile device testing.
 
 ## Mint referral policy
 
@@ -33,10 +53,13 @@ costs). Claim status changes withdrawal authority, not the creator allocation.
 The other half remains available to the burn/curation policy. Its exact split
 is not finalized. Redemption and transfer fees have no referral allocation here.
 
-100% of the deployer's realized SOL allocation is designated for the Wizards
-fanout on Robinhood Chain, after routing costs. The settlement worker accepts
-only verified payouts from a dedicated deployer distributor. The upstream
-controller, LST conversion and funded browser actions still need integration.
+Half of the deployer's realized SOL allocation is designated for the Wizards
+fanout on Robinhood Chain, after routing costs. The other half is reserved to
+buy and burn the in-app LST for `https://x.com/staccoverflow`; that executor is
+not active. The settlement worker discovers and verifies payouts from a
+dedicated deployer distributor. The upstream controller is implemented in
+`program`, but deployment, pool bootstrap and funded browser actions still
+need integration. See the settlement service for allocation and retry rules.
 
 ## Verification
 

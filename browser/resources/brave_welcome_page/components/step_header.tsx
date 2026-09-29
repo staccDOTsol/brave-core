@@ -4,12 +4,11 @@
  * You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import * as React from 'react'
-import Icon from '@brave/leo/react/icon'
 
 export function StepHeader() {
   return (
     <div className='step-header'>
-      <Icon name='social-brave-release-favicon-fullheight-color' />
+      <svg width='48' height='48' viewBox='0 0 256 256' role='img' aria-label='Root'><rect x='8' y='8' width='240' height='240' rx='56' fill='#17382d' /><path fill='#f2eee4' fillRule='evenodd' d='M68 48H130C167 48 188 68 188 101C188 124 177 139 158 147L193 194H146L109 141V194H68Z M109 82V108H130C142 108 148 103 148 95S142 82 130 82Z' /></svg>
     </div>
   )
 }

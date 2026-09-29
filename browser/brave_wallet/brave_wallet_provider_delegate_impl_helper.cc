@@ -39,7 +39,7 @@ void ShowPanel(content::WebContents* web_contents) {
   auto* tab_helper =
       brave_wallet::BraveWalletTabHelper::FromWebContents(web_contents);
   if (tab_helper) {
-    tab_helper->ShowBubble();
+    tab_helper->ShowApproveWalletBubble();
   }
 }
 

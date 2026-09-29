@@ -163,14 +163,17 @@ per creator/mint, and preserve creator credits through claims and fee changes.
 Privy wallets sign authorized user actions; they do not replace the on-chain
 escrow ledger or proof of creator ownership.
 
-The deployer's chosen allocation sends 100% of its realized SOL proceeds to the
-Wizards fanout on Robinhood Chain. The separate [settlement service](../components/creator_economy/server/settlement/README.md)
-validates finalized payouts from a dedicated deployer-only source, reserves each
-batch, routes SOL to a Privy WETH receiver through Relay, and verifies an exact
+The deployer's chosen allocation sends half of its realized SOL proceeds to the
+Wizards fanout on Robinhood Chain and reserves half to buy and burn the in-app
+LST for `https://x.com/staccoverflow`. The separate [settlement service](../components/creator_economy/server/settlement/README.md)
+discovers and validates finalized payouts from a dedicated deployer-only source,
+reserves each Wizards batch, routes SOL to a Privy WETH receiver through Relay, and verifies an exact
 forward transfer to the existing 8,010-share fanout. The receiver preserves
 native-ETH refund access. Creator liabilities and pool backing never enter this
-budget. This service does not implement the upstream controller or conversion
-of deployer LST shares into SOL, and no funded payout is claimed by its tests.
+budget. The buy-and-burn allocation remains reserved until its executor and
+verified creator mint are available. The upstream controller implementation is
+in `components/creator_economy/program`; deployment and funded browser integration
+remain pending. No funded payout is claimed by these tests.
 
 For backing `A`, outstanding shares `S`, mint input `d`:
 

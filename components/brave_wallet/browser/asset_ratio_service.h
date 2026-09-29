@@ -73,9 +73,20 @@ class AssetRatioService : public mojom::AssetRatioService {
   friend class AssetRatioServiceUnitTest;
 
   void OnGetPrice(GetPriceCallback callback,
+                  std::vector<mojom::AssetPriceRequestPtr> requests,
+                  std::string vs_currency,
                   APIRequestResult api_request_result);
+  void OnGetJupiterPrices(GetPriceCallback callback,
+                          std::vector<mojom::AssetPriceRequestPtr> requests,
+                          std::string vs_currency,
+                          APIRequestResult api_request_result);
   void OnGetPriceHistory(GetPriceHistoryCallback callback,
+                         std::string asset,
+                         std::string vs_asset,
+                         mojom::AssetPriceTimeframe timeframe,
                          APIRequestResult api_request_result);
+  void OnGetCoinGeckoHistory(GetPriceHistoryCallback callback,
+                             APIRequestResult api_request_result);
 
   void OnGetCoinMarkets(GetCoinMarketsCallback callback,
                         APIRequestResult api_request_result);

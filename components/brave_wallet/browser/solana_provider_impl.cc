@@ -217,6 +217,13 @@ SolanaProviderImpl::GetDeserializedMessage(
     return std::nullopt;
   }
 
+  if (!message_bytes.empty() && message_bytes[0] == 0x81) {
+    auto legacy = SolanaMessage::V1ToLegacyMessage(message_bytes);
+    if (!legacy) {
+      return std::nullopt;
+    }
+    message_bytes = std::move(*legacy);
+  }
   auto msg = SolanaMessage::Deserialize(message_bytes);
   if (!msg) {
     return std::nullopt;
@@ -600,10 +607,12 @@ void SolanaProviderImpl::OnTransactionStatusChanged(
         l10n_util::GetStringUTF8(IDS_WALLET_USER_REJECTED_REQUEST),
         std::move(result));
   } else if (tx_status == mojom::TransactionStatus::Error) {
-    std::move(callback).Run(
-        mojom::SolanaProviderError::kInternalError,
-        l10n_util::GetStringUTF8(IDS_WALLET_SEND_TRANSACTION_ERROR),
-        std::move(result));
+    const std::string rpc_error =
+        tx_info->tx_params.empty()
+            ? l10n_util::GetStringUTF8(IDS_WALLET_SEND_TRANSACTION_ERROR)
+            : tx_info->tx_params.front();
+    std::move(callback).Run(mojom::SolanaProviderError::kInternalError,
+                            rpc_error, std::move(result));
   } else {
     NOTREACHED() << tx_status;
   }

@@ -3,7 +3,7 @@
 // License, v. 2.0. https://mozilla.org/MPL/2.0/.
 
 import * as React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import Button from '@brave/leo/react/button'
 import Input from '@brave/leo/react/input'
 import Dropdown from '@brave/leo/react/dropdown'
@@ -25,6 +25,7 @@ import {
   parsePoolTokens,
   formatPoolTokens,
 } from '../../../../creator_economy/common/mint-fees'
+import { socialContext } from '../../../../creator_economy/common/social-context'
 import {
   Actions,
   Breakdown,
@@ -40,12 +41,22 @@ const LIBRARY_KEY = 'BRAVE_WALLET_CREATOR_LIBRARY_V1'
 interface Props {
   library: CreatorLibrary
   onChange: (next: CreatorLibrary) => void
+  initialProfile?: string
+  initialContent?: string
+  initialAction?: string
 }
 
 /** Native wallet content. Financial state will come from authenticated services. */
-export function CreatorHubView({ library, onChange }: Props) {
-  const [profileURL, setProfileURL] = React.useState('')
-  const [contentURL, setContentURL] = React.useState('')
+export function CreatorHubView({
+  library,
+  onChange,
+  initialProfile = '',
+  initialContent = '',
+  initialAction = '',
+}: Props) {
+  const [profileURL, setProfileURL] = React.useState(initialProfile)
+  const [contentURL, setContentURL] = React.useState(initialContent)
+  const [showClaim, setShowClaim] = React.useState(initialAction === 'claim')
   const [selectedCreator, setSelectedCreator] = React.useState('')
   const [grossShares, setGrossShares] = React.useState('100')
   const [error, setError] = React.useState(false)
@@ -82,6 +93,67 @@ export function CreatorHubView({ library, onChange }: Props) {
         </Link>
       </Actions>
       <p>{getLocale(S.BRAVE_WALLET_CREATORS_INTRO)}</p>
+      <Card aria-labelledby='creator-browse-title'>
+        <h2 id='creator-browse-title'>
+          {getLocale(S.BRAVE_WALLET_CREATORS_BROWSE_TITLE)}
+        </h2>
+        <p>{getLocale(S.BRAVE_WALLET_CREATORS_BROWSE_DESCRIPTION)}</p>
+        <Actions>
+          {[
+            ['X', 'https://x.com'],
+            ['YouTube', 'https://www.youtube.com'],
+            ['Instagram', 'https://www.instagram.com'],
+            ['TikTok', 'https://www.tiktok.com'],
+            ['Facebook', 'https://www.facebook.com'],
+            ['Reddit', 'https://www.reddit.com'],
+            ['Twitch', 'https://www.twitch.tv'],
+            ['Threads', 'https://www.threads.com'],
+            ['LinkedIn', 'https://www.linkedin.com'],
+            ['Bluesky', 'https://bsky.app'],
+          ].map(([label, href]) => (
+            <a
+              key={href}
+              href={href}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              {label}
+            </a>
+          ))}
+        </Actions>
+      </Card>
+      {initialContent && (
+        <Card>
+          <h2>{getLocale(S.BRAVE_WALLET_CREATORS_SELECTED_POST)}</h2>
+          <a
+            href={initialContent}
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            {initialContent}
+          </a>
+          <Note>{getLocale(S.BRAVE_WALLET_CREATORS_ATTRIBUTION_NOTE)}</Note>
+          <Button
+            disabled={!creator}
+            onClick={() => {
+              if (creator)
+                change(() =>
+                  curateContent(
+                    followCreator(library, creator),
+                    creator.url,
+                    initialContent,
+                  ),
+                )
+            }}
+          >
+            {initialAction === 'sell'
+              ? 'Sell'
+              : initialAction === 'ape'
+                ? 'Ape'
+                : getLocale(S.BRAVE_WALLET_CREATORS_SAVE_CONTENT)}
+          </Button>
+        </Card>
+      )}
       {error && (
         <p role='alert'>{getLocale(S.BRAVE_WALLET_CREATORS_SAVE_ERROR)}</p>
       )}
@@ -105,6 +177,26 @@ export function CreatorHubView({ library, onChange }: Props) {
             {getLocale(S.BRAVE_WALLET_CREATORS_FOLLOW)}
           </Button>
           <Note>{getLocale(S.BRAVE_WALLET_CREATORS_LOCAL_NOTE)}</Note>
+          <Button
+            kind='plain'
+            disabled={!creator}
+            onClick={() => setShowClaim(!showClaim)}
+          >
+            {getLocale(S.BRAVE_WALLET_CREATORS_CLAIM)}
+          </Button>
+          {showClaim && (
+            <section aria-label={getLocale(S.BRAVE_WALLET_CREATORS_CLAIM)}>
+              <h3>{getLocale(S.BRAVE_WALLET_CREATORS_CLAIM)}</h3>
+              <p>{getLocale(S.BRAVE_WALLET_CREATORS_CLAIM_STEPS)}</p>
+              <a
+                href={`https://getrooted.fun/claim/?profile=${encodeURIComponent(creator?.url ?? '')}`}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                {getLocale(S.BRAVE_WALLET_CREATORS_CLAIM_CONTINUE)}
+              </a>
+            </section>
+          )}
           {library.creators.length === 0 && (
             <p>{getLocale(S.BRAVE_WALLET_CREATORS_EMPTY)}</p>
           )}
@@ -239,6 +331,11 @@ export function CreatorHubView({ library, onChange }: Props) {
 }
 
 export function CreatorHub() {
+  const location = useLocation()
+  const params = new URLSearchParams(location.search)
+  const incomingProfile = creatorFromURL(params.get('profile') ?? '')?.url ?? ''
+  const incomingContent =
+    socialContext(params.get('content') ?? '')?.contentURL ?? ''
   const [library, setLibrary] = React.useState<CreatorLibrary>(EMPTY_LIBRARY)
   React.useEffect(() => {
     const refresh = () => {
@@ -274,8 +371,12 @@ export function CreatorHub() {
       }
     >
       <CreatorHubView
+        key={location.search}
         library={library}
         onChange={save}
+        initialProfile={incomingProfile}
+        initialContent={incomingContent}
+        initialAction={params.get('action') ?? ''}
       />
     </WalletPageWrapper>
   )

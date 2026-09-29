@@ -172,7 +172,6 @@ export const ConfirmTransactionPanel = () => {
     !transactionDetails
     || !selectedPendingTransaction
     || !fromAccount
-    || !transactionsQueueLength
   ) {
     return (
       <LongWrapper>

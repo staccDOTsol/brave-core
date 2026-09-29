@@ -56,6 +56,10 @@ class SolanaMessage {
   // Returns true if layout matches spec.
   // https://github.com/solana-foundation/solana-improvement-documents/blob/cddb637c56916b7432f75d20ebf8bf74f69e794b/proposals/0385-transaction-v1.md
   static bool DeserializeAsV1(base::span<const uint8_t> bytes);
+  // SIMD-0385 v1 uses u16 instruction data lengths. Signing still needs the
+  // legacy message the cluster accepts.
+  static std::optional<std::vector<uint8_t>> V1ToLegacyMessage(
+      base::span<const uint8_t> bytes);
 
   void set_recent_blockhash(const std::string& recent_blockhash) {
     recent_blockhash_ = recent_blockhash;

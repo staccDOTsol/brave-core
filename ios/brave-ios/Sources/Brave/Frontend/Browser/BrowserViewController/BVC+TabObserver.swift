@@ -375,6 +375,7 @@ extension BrowserViewController {
         injectedScripts += [
           EthereumProviderScriptHandler(),
           SolanaProviderScriptHandler(),
+          CreatorTradeScriptHandler(),
         ]
       }
       if WalletConstants.isCardanoDAppSupportEnabled {

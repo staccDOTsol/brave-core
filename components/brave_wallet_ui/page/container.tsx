@@ -127,6 +127,14 @@ export const Container = () => {
     pathname.includes(WalletRoutes.Send)
     || pathname.includes(WalletRoutes.Swap)
     || pathname.includes(WalletRoutes.Bridge)
+  // The toolbar bubble is the approval surface for an in-tab ape. Creators
+  // stays on the full wallet page; a locked bubble is the unlock screen.
+  const isPopup = isPanel && !isSidePanel
+  const popupHome = isWalletLocked
+    ? WalletRoutes.Unlock
+    : sessionRoute && !sessionRoute.startsWith(WalletRoutes.Creators)
+      ? sessionRoute
+      : WalletRoutes.PortfolioAssets
 
   // Methods
   const handleAcceptPartnerConsent = () => {
@@ -226,7 +234,7 @@ export const Container = () => {
       <Switch>
         {/* Creator discovery has no dependency on a self-custody seed wallet. */}
         <Route path={WalletRoutes.Creators} exact>
-          <CreatorHub />
+          {isPopup ? <Redirect to={popupHome} /> : <CreatorHub />}
         </Route>
         <ProtectedRoute
           path={WalletRoutes.Onboarding}
@@ -324,7 +332,9 @@ export const Container = () => {
         <Route
           path={WalletRoutes.Root}
           exact={true}
-          render={() => <Redirect to={WalletRoutes.Creators} />}
+          render={() => (
+            <Redirect to={isPopup ? popupHome : WalletRoutes.Creators} />
+          )}
         />
 
         {/* Insures that we redirect to the default route if the user

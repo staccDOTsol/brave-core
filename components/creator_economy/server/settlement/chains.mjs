@@ -19,7 +19,7 @@ const fanoutAbi = parseAbi([
   'function collection() view returns (address)',
 ])
 
-export function payoutCredits(tx, signature, config) {
+export function payoutCredits(tx, signature, config, { allowEmpty = false } = {}) {
   assert(tx && tx.meta && tx.meta.err === null, 'Payout must be finalized and successful')
   const credits = []
   const inspect = (ix, index) => {
@@ -36,7 +36,7 @@ export function payoutCredits(tx, signature, config) {
   for (const group of tx.meta.innerInstructions ?? []) {
     group.instructions.forEach((ix, i) => inspect(ix, `${group.index}.${i}`))
   }
-  assert(credits.length > 0, 'No payout from the configured deployer-only distributor')
+  assert(allowEmpty || credits.length > 0, 'No payout from the configured deployer-only distributor')
   return credits
 }
 

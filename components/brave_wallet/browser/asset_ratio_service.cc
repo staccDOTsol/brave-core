@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "brave/components/api_request_helper/api_request_helper.h"
 #include "brave/components/brave_wallet/browser/asset_ratio_response_parser.h"
 #include "brave/components/brave_wallet/browser/brave_wallet_constants.h"
@@ -230,9 +231,15 @@ void AssetRatioService::GetPrice(
 
   auto conversion_callback = base::BindOnce(&ConvertAllNumbersToString, "");
 
-  auto internal_callback =
-      base::BindOnce(&AssetRatioService::OnGetPrice,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  std::vector<mojom::AssetPriceRequestPtr> kept;
+  kept.reserve(requests.size());
+  for (const auto& request : requests) {
+    kept.push_back(request.Clone());
+  }
+
+  auto internal_callback = base::BindOnce(
+      &AssetRatioService::OnGetPrice, weak_ptr_factory_.GetWeakPtr(),
+      std::move(callback), std::move(kept), vs_currency);
 
   api_request_helper_->Request(
       "POST", url, json_payload, "application/json",
@@ -241,16 +248,90 @@ void AssetRatioService::GetPrice(
       std::move(conversion_callback));
 }
 
-void AssetRatioService::OnGetPrice(GetPriceCallback callback,
-                                   APIRequestResult api_request_result) {
+void AssetRatioService::OnGetPrice(
+    GetPriceCallback callback,
+    std::vector<mojom::AssetPriceRequestPtr> requests,
+    std::string vs_currency,
+    APIRequestResult api_request_result) {
+  if (api_request_result.Is2XXResponseCode()) {
+    std::move(callback).Run(true,
+                            ParseAssetPrices(api_request_result.value_body()));
+    return;
+  }
+
+  // Unit tests point this service at a mock host. Production Brave ratios
+  // reject this build, so ask Jupiter for the same mints.
+  if (!base_url_for_test_.is_empty()) {
+    std::move(callback).Run(false, {});
+    return;
+  }
+
+  std::vector<std::string> mints;
+  for (const auto& request : requests) {
+    if (request->address && !request->address->empty()) {
+      mints.push_back(*request->address);
+    } else if (request->coin == mojom::CoinType::SOL) {
+      mints.push_back(kWrappedSolanaMintAddress);
+    }
+  }
+  if (mints.empty()) {
+    std::move(callback).Run(false, {});
+    return;
+  }
+
+  GURL url("https://lite-api.jup.ag/price/v3");
+  url = net::AppendQueryParameter(url, "ids", base::JoinString(mints, ","));
+  auto internal_callback = base::BindOnce(
+      &AssetRatioService::OnGetJupiterPrices, weak_ptr_factory_.GetWeakPtr(),
+      std::move(callback), std::move(requests), std::move(vs_currency));
+  api_request_helper_->Request(
+      "GET", url, "", "", std::move(internal_callback), {},
+      {.auto_retry_on_network_change = true, .enable_cache = true});
+}
+
+void AssetRatioService::OnGetJupiterPrices(
+    GetPriceCallback callback,
+    std::vector<mojom::AssetPriceRequestPtr> requests,
+    std::string vs_currency,
+    APIRequestResult api_request_result) {
   std::vector<mojom::AssetPricePtr> prices;
-  if (!api_request_result.Is2XXResponseCode()) {
+  const auto* quoted = api_request_result.Is2XXResponseCode()
+                           ? api_request_result.value_body().GetIfDict()
+                           : nullptr;
+  if (!quoted) {
     std::move(callback).Run(false, std::move(prices));
     return;
   }
 
-  prices = ParseAssetPrices(api_request_result.value_body());
-  std::move(callback).Run(true, std::move(prices));
+  for (const auto& request : requests) {
+    const std::string mint =
+        request->address && !request->address->empty()
+            ? *request->address
+            : (request->coin == mojom::CoinType::SOL ? kWrappedSolanaMintAddress
+                                                      : "");
+    const auto* item = mint.empty() ? nullptr : quoted->FindDict(mint);
+    if (!item) {
+      continue;
+    }
+    const std::optional<double> usd = item->FindDouble("usdPrice");
+    if (!usd) {
+      continue;
+    }
+    auto price = mojom::AssetPrice::New();
+    price->coin = request->coin;
+    price->chain_id = request->chain_id;
+    price->address = request->address.value_or("");
+    price->price = base::NumberToString(*usd);
+    price->vs_currency = vs_currency;
+    price->cache_status = mojom::Gate3CacheStatus::kMiss;
+    price->source = mojom::AssetPriceSource::kJupiter;
+    if (const std::optional<double> change = item->FindDouble("priceChange24h")) {
+      price->percentage_change_24h = base::NumberToString(*change);
+    }
+    prices.push_back(std::move(price));
+  }
+
+  std::move(callback).Run(!prices.empty(), std::move(prices));
 }
 
 void AssetRatioService::GetPriceHistory(const std::string& asset,
@@ -260,29 +341,104 @@ void AssetRatioService::GetPriceHistory(const std::string& asset,
   std::string asset_lower = base::ToLowerASCII(asset);
   std::string vs_asset_lower = base::ToLowerASCII(vs_asset);
 
-  auto internal_callback =
-      base::BindOnce(&AssetRatioService::OnGetPriceHistory,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  auto internal_callback = base::BindOnce(
+      &AssetRatioService::OnGetPriceHistory, weak_ptr_factory_.GetWeakPtr(),
+      std::move(callback), asset_lower, vs_asset_lower, timeframe);
   api_request_helper_->Request(
       "GET", GetPriceHistoryURL(asset_lower, vs_asset_lower, timeframe), "", "",
       std::move(internal_callback), MakeBraveServicesKeyHeaders(),
       {.auto_retry_on_network_change = true, .enable_cache = true});
 }
 
-void AssetRatioService::OnGetPriceHistory(GetPriceHistoryCallback callback,
-                                          APIRequestResult api_request_result) {
+void AssetRatioService::OnGetPriceHistory(
+    GetPriceHistoryCallback callback,
+    std::string asset,
+    std::string vs_asset,
+    mojom::AssetPriceTimeframe timeframe,
+    APIRequestResult api_request_result) {
   std::vector<mojom::AssetTimePricePtr> values;
-  if (!api_request_result.Is2XXResponseCode()) {
+  if (api_request_result.Is2XXResponseCode() &&
+      ParseAssetPriceHistory(api_request_result.value_body(), &values)) {
+    std::move(callback).Run(true, std::move(values));
+    return;
+  }
+  if (!base_url_for_test_.is_empty()) {
     std::move(callback).Run(false, std::move(values));
     return;
   }
 
-  if (!ParseAssetPriceHistory(api_request_result.value_body(), &values)) {
+  std::string coin_id = asset;
+  if (asset == "sol") {
+    coin_id = "solana";
+  } else if (asset == "eth") {
+    coin_id = "ethereum";
+  } else if (asset == "btc") {
+    coin_id = "bitcoin";
+  }
+  std::string days = "1";
+  switch (timeframe) {
+    case mojom::AssetPriceTimeframe::Live:
+    case mojom::AssetPriceTimeframe::OneDay:
+      days = "1";
+      break;
+    case mojom::AssetPriceTimeframe::OneWeek:
+      days = "7";
+      break;
+    case mojom::AssetPriceTimeframe::OneMonth:
+      days = "30";
+      break;
+    case mojom::AssetPriceTimeframe::ThreeMonths:
+      days = "90";
+      break;
+    case mojom::AssetPriceTimeframe::OneYear:
+      days = "365";
+      break;
+    case mojom::AssetPriceTimeframe::All:
+      days = "max";
+      break;
+  }
+  GURL url(absl::StrFormat(
+      "https://api.coingecko.com/api/v3/coins/%s/market_chart?vs_currency=%s&days=%s",
+      coin_id, vs_asset, days));
+  auto internal_callback =
+      base::BindOnce(&AssetRatioService::OnGetCoinGeckoHistory,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  api_request_helper_->Request(
+      "GET", url, "", "", std::move(internal_callback), {},
+      {.auto_retry_on_network_change = true, .enable_cache = true});
+}
+
+void AssetRatioService::OnGetCoinGeckoHistory(
+    GetPriceHistoryCallback callback,
+    APIRequestResult api_request_result) {
+  std::vector<mojom::AssetTimePricePtr> values;
+  const auto* body = api_request_result.Is2XXResponseCode()
+                         ? api_request_result.value_body().GetIfDict()
+                         : nullptr;
+  const auto* prices = body ? body->FindList("prices") : nullptr;
+  if (!prices) {
     std::move(callback).Run(false, std::move(values));
     return;
   }
-
-  std::move(callback).Run(true, std::move(values));
+  for (const auto& point : *prices) {
+    const auto* pair = point.GetIfList();
+    if (!pair || pair->size() < 2) {
+      continue;
+    }
+    const auto& date_value = (*pair)[0];
+    const auto& price_value = (*pair)[1];
+    if ((!date_value.is_double() && !date_value.is_int()) ||
+        (!price_value.is_double() && !price_value.is_int())) {
+      continue;
+    }
+    auto row = mojom::AssetTimePrice::New();
+    row->date = base::Milliseconds(
+        base::Time::FromMillisecondsSinceUnixEpoch(date_value.GetDouble())
+            .InMillisecondsSinceUnixEpoch());
+    row->price = base::NumberToString(price_value.GetDouble());
+    values.push_back(std::move(row));
+  }
+  std::move(callback).Run(!values.empty(), std::move(values));
 }
 
 // static

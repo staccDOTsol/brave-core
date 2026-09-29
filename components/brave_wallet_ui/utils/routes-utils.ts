@@ -48,8 +48,9 @@ export function isPersistableSessionRoute(
     return false
   }
   const routePath = getWalletLocationPathname(route)
+  const isPopup = Boolean(isPanel && !isSidePanel)
   const isPersistableInPanel =
-    routePath === WalletRoutes.Creators
+    (routePath === WalletRoutes.Creators && !isPopup)
     /**
      * Insure that the Accounts route is an exact match.
      */

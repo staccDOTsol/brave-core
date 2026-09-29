@@ -584,6 +584,74 @@ bool SolanaMessage::DeserializeAsV1(base::span<const uint8_t> bytes) {
   return true;
 }
 
+std::optional<std::vector<uint8_t>> SolanaMessage::V1ToLegacyMessage(
+    base::span<const uint8_t> bytes) {
+  base::SpanReader<const uint8_t> reader(bytes);
+  uint8_t version = 0;
+  uint8_t signers = 0;
+  uint8_t readonly_signed = 0;
+  uint8_t readonly_unsigned = 0;
+  uint32_t mask = 0;
+  if (!reader.ReadU8LittleEndian(version) || version != kV1MessagePrefix ||
+      !reader.ReadU8LittleEndian(signers) ||
+      !reader.ReadU8LittleEndian(readonly_signed) ||
+      !reader.ReadU8LittleEndian(readonly_unsigned) ||
+      !reader.ReadU32LittleEndian(mask) || mask != 0) {
+    return std::nullopt;
+  }
+  auto blockhash = reader.Read<kSolanaHashSize>();
+  uint8_t num_instructions = 0;
+  uint8_t num_addresses = 0;
+  if (!blockhash || !reader.ReadU8LittleEndian(num_instructions) ||
+      !reader.ReadU8LittleEndian(num_addresses) || num_addresses == 0) {
+    return std::nullopt;
+  }
+  auto addresses = reader.Read(static_cast<size_t>(num_addresses) * 32u);
+  if (!addresses) {
+    return std::nullopt;
+  }
+  struct Header {
+    uint8_t program;
+    uint8_t accounts;
+    uint16_t data;
+  };
+  std::vector<Header> headers;
+  headers.reserve(num_instructions);
+  for (uint8_t i = 0; i < num_instructions; ++i) {
+    Header header;
+    if (!reader.ReadU8LittleEndian(header.program) ||
+        !reader.ReadU8LittleEndian(header.accounts) ||
+        !reader.ReadU16LittleEndian(header.data)) {
+      return std::nullopt;
+    }
+    headers.push_back(header);
+  }
+  std::vector<uint8_t> legacy;
+  legacy.push_back(signers);
+  legacy.push_back(readonly_signed);
+  legacy.push_back(readonly_unsigned);
+  base::Extend(legacy, CompactU16Encode(num_addresses));
+  base::Extend(legacy, *addresses);
+  base::Extend(legacy, *blockhash);
+  base::Extend(legacy, CompactU16Encode(num_instructions));
+  for (const auto& header : headers) {
+    auto accounts = reader.Read(header.accounts);
+    auto data = reader.Read(header.data);
+    if (!accounts || !data) {
+      return std::nullopt;
+    }
+    legacy.push_back(header.program);
+    base::Extend(legacy, CompactU16Encode(header.accounts));
+    base::Extend(legacy, *accounts);
+    base::Extend(legacy, CompactU16Encode(header.data));
+    base::Extend(legacy, *data);
+  }
+  if (reader.remaining() != 0) {
+    return std::nullopt;
+  }
+  return legacy;
+}
+
 mojom::SolanaTxDataPtr SolanaMessage::ToSolanaTxData() const {
   std::vector<mojom::SolanaInstructionPtr> mojom_instructions;
   for (const auto& instruction : instructions_) {

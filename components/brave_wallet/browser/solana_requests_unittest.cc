@@ -59,7 +59,7 @@ TEST(SolanaRequestsUnitTest, sendTransaction) {
 TEST(SolanaRequestsUnitTest, getLatestBlockhash) {
   ASSERT_EQ(
       getLatestBlockhash(),
-      R"({"id":1,"jsonrpc":"2.0","method":"getLatestBlockhash","params":[]})");
+      R"({"id":1,"jsonrpc":"2.0","method":"getLatestBlockhash","params":[{"commitment":"confirmed"}]})");
 }
 
 TEST(SolanaRequestsUnitTest, getSignatureStatuses) {

@@ -6,7 +6,7 @@
       "layers": [
         {
           "image-name": "faircreators.svg",
-          "name": "FairCreators",
+          "name": "Root",
           "position": {
             "scale": 1,
             "translation-in-points": [
@@ -17,7 +17,7 @@
           "glass": false
         }
       ],
-      "name": "FairCreators"
+      "name": "Root"
     }
   ],
   "supported-platforms": {

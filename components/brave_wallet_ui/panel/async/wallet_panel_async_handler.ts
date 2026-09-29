@@ -115,6 +115,10 @@ startAppListening({
       )
     })
 
+    // The bubble is already visible when it opens, so visibilitychange never
+    // fires and the wallet stayed uninitialized behind the ring.
+    await refreshWalletInfo(listenerApi)
+
     // Parse webUI URL, dispatch showConnectToSite action if needed.
     // TODO(jocelyn): Extract ConnectToSite UI pieces out from panel UI.
     const url = new URL(window.location.href)

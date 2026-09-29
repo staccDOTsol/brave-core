@@ -35,6 +35,7 @@ import class Combine.AnyCancellable
 
 public class BrowserViewController: UIViewController {
   let webViewContainer = UIView()
+  let creatorPill = CreatorPillBar()
   private(set) lazy var screenshotHelper = ScreenshotHelper(tabManager: tabManager)
 
   private(set) lazy var vCardHelper: VCardHelper = {
@@ -819,6 +820,7 @@ public class BrowserViewController: UIViewController {
     topToolbar.currentURL = currentURL
     collapsedURLBarView.currentURL = currentURL
     updateScreenTimeUrl(currentURL)
+    updateCreatorPill(currentURL)
   }
 
   override public func willTransition(
@@ -977,6 +979,10 @@ public class BrowserViewController: UIViewController {
     // Add views
     view.addSubview(webViewContainerBackdrop)
     view.addSubview(webViewContainer)
+    view.addSubview(creatorPill)
+    creatorPill.tap = { [weak self] action in
+      self?.openCreatorAction(action)
+    }
     header.expandedBarStackView.addArrangedSubview(topToolbar)
     header.collapsedBarContainerView.addSubview(collapsedURLBarView)
 
@@ -1334,6 +1340,12 @@ public class BrowserViewController: UIViewController {
 
     webViewContainerBackdrop.snp.makeConstraints { make in
       make.edges.equalTo(webViewContainer)
+    }
+
+    creatorPill.snp.makeConstraints { make in
+      make.top.equalTo(webViewContainer.safeAreaLayoutGuide.snp.top).offset(8)
+      make.trailing.equalTo(webViewContainer).offset(-8)
+      make.leading.greaterThanOrEqualTo(webViewContainer).offset(8)
     }
 
     topTouchArea.snp.makeConstraints { make in

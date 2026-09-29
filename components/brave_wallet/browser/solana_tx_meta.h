@@ -7,6 +7,7 @@
 #define BRAVE_COMPONENTS_BRAVE_WALLET_BROWSER_SOLANA_TX_META_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "brave/components/brave_wallet/browser/solana_transaction.h"
@@ -39,11 +40,13 @@ class SolanaTxMeta : public TxMeta {
   void set_signature_status(const SolanaSignatureStatus& signature_status) {
     signature_status_ = signature_status;
   }
+  void set_send_error(const std::string& send_error) { send_error_ = send_error; }
 
   bool IsRetriable() const;
 
  private:
   std::unique_ptr<SolanaTransaction> tx_;
+  std::string send_error_;
   // Status returned by getSignatureStatuses JSON-RPC call.
   SolanaSignatureStatus signature_status_;
 };

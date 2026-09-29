@@ -41,7 +41,10 @@ import { makeNetworkAsset } from '../../options/asset-options'
 // Custom Hooks
 import useGetTokenInfo from './use-get-token-info'
 import { useAccountOrb, useAddressOrb } from './use-orb'
-import { useSafeUISelector } from './use-safe-selector'
+import {
+  useSafeUISelector,
+  useUnsafeUISelector,
+} from './use-safe-selector'
 import {
   useApproveTransactionMutation,
   useGetAccountInfosRegistryQuery,
@@ -131,15 +134,18 @@ export const usePendingTransactions = () => {
   })
   const { data: accounts } = useGetAccountInfosRegistryQuery()
 
+  const submittingTransaction = useUnsafeUISelector(
+    UISelectors.submittingTransaction,
+  )
+
   const transactionInfo = React.useMemo(() => {
-    if (!pendingTransactions.length) {
-      return undefined
-    }
-    return (
-      pendingTransactions.find((tx) => tx.id === selectedPendingTransactionId)
-      ?? pendingTransactions[0]
-    )
-  }, [pendingTransactions, selectedPendingTransactionId])
+    const queued = pendingTransactions.find(
+      (tx) => tx.id === selectedPendingTransactionId,
+    ) ?? pendingTransactions[0]
+    // Approve removes the tx from the pending list before send finishes.
+    // Keep the copy we stored at confirm so the panel does not swap to a spinner.
+    return queued ?? submittingTransaction
+  }, [pendingTransactions, selectedPendingTransactionId, submittingTransaction])
 
   const txCoinType = transactionInfo
     ? getCoinFromTxDataUnion(transactionInfo.txDataUnion)
@@ -221,7 +227,6 @@ export const usePendingTransactions = () => {
   const transactionDetails = React.useMemo(() => {
     if (
       !transactionInfo
-      || !spotPrices
       || !txAccount
       || !transactionsNetwork
       || !accounts
@@ -233,7 +238,8 @@ export const usePendingTransactions = () => {
       tx: transactionInfo,
       accounts,
       gasFee,
-      spotPrices,
+      // A failed SOL price quote must not hide the approval.
+      spotPrices: spotPrices ?? [],
       tokensList: combinedTokensList,
       transactionAccount: txAccount,
       transactionNetwork: transactionsNetwork,
@@ -539,6 +545,17 @@ export const usePendingTransactions = () => {
             transactionId: transactionInfo.id,
           }),
         )
+        return
+      }
+      dispatch(
+        UIActions.setSelectedTransactionId({
+          chainId: transactionInfo.chainId,
+          coin: getCoinFromTxDataUnion(transactionInfo.txDataUnion),
+          id: transactionInfo.id,
+        }),
+      )
+      if (isPanel && !isSidePanel) {
+        dispatch(PanelActions.navigateTo('transactionStatus'))
       }
     } catch (error) {
       dispatch(
@@ -554,16 +571,6 @@ export const usePendingTransactions = () => {
         }),
       )
     } finally {
-      dispatch(
-        UIActions.setSelectedTransactionId({
-          chainId: transactionInfo.chainId,
-          coin: getCoinFromTxDataUnion(transactionInfo.txDataUnion),
-          id: transactionInfo.id,
-        }),
-      )
-      if (isPanel && !isSidePanel) {
-        dispatch(PanelActions.navigateTo('transactionStatus'))
-      }
       dispatch(UIActions.setSubmittingTransaction(undefined))
     }
   }, [approveTransaction, dispatch, isPanel, isSidePanel, transactionInfo])
@@ -638,9 +645,9 @@ export const usePendingTransactions = () => {
       return false
     }
 
-    // SOL
+    // SOL dapp approvals can be signed while the fee quote is still loading.
     if (txCoinType === BraveWallet.CoinType.SOL) {
-      return isLoadingSolFeeEstimates
+      return isSolanaDappTransaction ? false : isLoadingSolFeeEstimates
     }
 
     // FIL has gas info provided by txDataUnion
@@ -654,7 +661,13 @@ export const usePendingTransactions = () => {
     }
 
     assertNotReached(`Unknown coin ${txCoinType}`)
-  }, [txCoinType, isLoadingSolFeeEstimates, gasFee, isLoadingGasEstimates])
+  }, [
+    txCoinType,
+    isLoadingSolFeeEstimates,
+    isSolanaDappTransaction,
+    gasFee,
+    isLoadingGasEstimates,
+  ])
 
   const hasFeeEstimatesError =
     txCoinType === BraveWallet.CoinType.SOL
@@ -666,7 +679,14 @@ export const usePendingTransactions = () => {
       return true
     }
 
-    if (hasFeeEstimatesError || isLoadingGasFee) {
+    if (isLoadingGasFee) {
+      return true
+    }
+
+    // A dapp approval can still be signed when the fee quote fails. The
+    // cluster charges the real fee, and a null quote used to leave Confirm
+    // disabled for the whole request.
+    if (hasFeeEstimatesError && !isSolanaDappTransaction) {
       return true
     }
 
@@ -685,6 +705,7 @@ export const usePendingTransactions = () => {
     transactionDetails,
     hasFeeEstimatesError,
     isLoadingGasFee,
+    isSolanaDappTransaction,
     insufficientFundsError,
     insufficientFundsForGasError,
     isAccountSyncing,

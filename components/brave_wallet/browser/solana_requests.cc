@@ -57,7 +57,9 @@ std::string sendTransaction(
 }
 
 std::string getLatestBlockhash() {
-  return GetJsonRpcString("getLatestBlockhash");
+  base::DictValue config;
+  config.Set("commitment", "confirmed");
+  return GetJsonRpcString("getLatestBlockhash", std::move(config));
 }
 
 std::string getSignatureStatuses(

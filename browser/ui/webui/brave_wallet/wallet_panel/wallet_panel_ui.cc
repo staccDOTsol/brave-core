@@ -196,13 +196,24 @@ void WalletPanelUI::CreatePanelHandler(
   auto* profile = Profile::FromWebUI(web_ui());
   CHECK(profile);
 
-  content::WebContents* active_web_contents = active_web_contents_.get();
-  if (!active_web_contents) {
-    return;
+  // The tab captured when this bubble was first created can be gone. Re-resolve
+  // it, and still bind the wallet services: returning here drops the pipes and
+  // the panel waits forever on getWalletInfo.
+  if (!active_web_contents_) {
+    if (BrowserWindowInterface* const bwi =
+            GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
+      if (content::WebContents* contents =
+              bwi->GetTabStripModel()->GetActiveWebContents()) {
+        active_web_contents_ = contents->GetWeakPtr();
+      }
+    }
   }
 
-  panel_handler_ = std::make_unique<WalletPanelHandler>(
-      std::move(panel_receiver), this, active_web_contents);
+  content::WebContents* active_web_contents = active_web_contents_.get();
+  if (active_web_contents) {
+    panel_handler_ = std::make_unique<WalletPanelHandler>(
+        std::move(panel_receiver), this, active_web_contents);
+  }
 
   if (auto* wallet_service =
           brave_wallet::BraveWalletServiceFactory::GetServiceForContext(

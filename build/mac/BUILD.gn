@@ -309,7 +309,7 @@ if (is_official_build && !skip_signing) {
   }
   copy("copy_provisionprofile") {
     sources = [ "${provisionprofile_basename}.provisionprofile" ]
-    outputs = [ "${packaging_dir}/${provisionprofile_basename}.24b42420108116ac21f215640e39f7d004e51498.provisionprofile" ]
+    outputs = [ "${packaging_dir}/${provisionprofile_basename}.provisionprofile" ]
   }
 }
 
@@ -332,6 +332,10 @@ action("package") {
     "//chrome/installer/mac",
   ]
   script = "$packaging_dir/sign_chrome.py"
+  inputs = [
+    "//brave/chromium_src/chrome/installer/mac/signing/pipeline.py",
+    "//brave/script/signing_helper.py",
+  ]
   installer_identity = mac_installer_signing_identifier
   if (skip_signing && installer_identity == "") {
     # Prevent an AssertionError in upstream:
@@ -345,11 +349,14 @@ action("package") {
 
     # sign_chrome.py requires --identity even when signing is skipped.
     "--identity=$mac_signing_identifier",
-    "--keychain=$keychain_db",
+    # codesign uses the keychain search list; upstream removed --keychain.
     "--installer-identity=$installer_identity",
   ]
   if (!is_official_build) {
     args += [ "--development" ]
+  }
+  if (!build_sparkle) {
+    args += [ "--disable-sparkle" ]
   }
   if (skip_signing) {
     args += [ "--skip_signing" ]

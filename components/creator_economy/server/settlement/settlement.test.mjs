@@ -75,16 +75,33 @@ function ledger(t) {
   t.after(() => { db.close(); fs.rmSync(dir, { recursive: true, force: true }) })
   return { get db() { return db }, reopen() { db.close(); db = new Ledger(file, config) }, file }
 }
-const credit = { id: 'finalized-payout:0', lamports: amount }
+const credit = { id: 'finalized-payout:0', lamports: '2000000000' }
 
-test('100% of deployer proceeds route to the pinned fanout, in bounded batches', t => {
+test('half of deployer proceeds routes to Wizards and half stays reserved for buy/burn', t => {
   const store = ledger(t), db = store.db
   assert.equal(POLICY.deployerShareBps, 10000)
   db.credit({ ...credit, lamports: '3000000000' })
   assert.equal(db.reserve(config).amount, amount)
-  assert.equal(db.available(), 2000000000n)
+  assert.equal(db.available(), 500000000n)
+  assert.equal(db.buyBurnAvailable(), 1500000000n)
   assert.equal(db.reserve(config).amount, amount)
   assert.equal(db.summary().batches.length, 1)
+})
+
+test('odd lamports stay assigned across new receipts, replay and restart', t => {
+  const store = ledger(t)
+  store.db.credit({ id: 'odd:0', lamports: '2000000001' })
+  const batch = store.db.reserve(config)
+  assert.equal(batch.amount, amount)
+  assert.equal(store.db.available(), 0n)
+  assert.equal(store.db.buyBurnAvailable(), 1000000001n)
+  store.db.credit({ id: 'odd:1', lamports: '1' })
+  store.db.credit({ id: 'odd:1', lamports: '1' })
+  store.reopen()
+  assert.equal(store.db.available(), 0n)
+  assert.equal(store.db.buyBurnAvailable(), 1000000002n)
+  assert.equal(store.db.reserve(config).id, batch.id)
+  assert.equal(store.db.summary().buyBurnCreator, 'https://x.com/staccoverflow')
 })
 
 test('receipt replay is idempotent and changed amounts are rejected', t => {
@@ -186,7 +203,7 @@ test('refunds hold the credited budget and do not silently pay again', async t =
 
 test('only confirmed delivery finishes a batch; destination hashes cannot be reused', async t => {
   const { db } = ledger(t), chain = fakeChains()
-  db.credit({ ...credit, lamports: '2000000000' })
+  db.credit({ ...credit, lamports: '4000000000' })
   chain.bridgeStatus = async () => ({ hash: 'fill', amount: '100' })
   for (let i = 0; i < 6; i++) await tick(db, chain, config)
   assert.equal(db.active(), null)

@@ -24,12 +24,10 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
     content::GlobalRenderFrameHostId global_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!BUILDFLAG(ENABLE_BRAVE_SPEECH_TO_TEXT)) {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), false, false));
-    return;
-  }
-
+#if !BUILDFLAG(ENABLE_BRAVE_SPEECH_TO_TEXT)
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), false, false));
+#else
   if (auto* rph = content::RenderProcessHost::FromID(global_id.child_id)) {
     if (auto* profile = Profile::FromBrowserContext(rph->GetBrowserContext())) {
       if (profile->IsTor()) {
@@ -42,6 +40,7 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
   }
 
   return CheckRenderFrameType_ChromiumImpl(std::move(callback), global_id);
+#endif  // !BUILDFLAG(ENABLE_BRAVE_SPEECH_TO_TEXT)
 }
 
 }  // namespace speech

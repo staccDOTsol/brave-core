@@ -308,24 +308,16 @@ void SolanaTxManager::ApproveTransaction(const std::string& tx_meta_id,
     return;
   }
 
-  const std::string blockhash = meta->tx()->message()->recent_blockhash();
+  // The hash already on the message is the one the page fetched. It is dead
+  // by the time the user confirms. Always ask the cluster again, and do not
+  // reuse the two-second tracker cache.
   auto chain_id = meta->chain_id();
-  if (blockhash.empty()) {
-    GetSolanaBlockTracker().GetLatestBlockhash(
-        chain_id,
-        base::BindOnce(&SolanaTxManager::OnGetLatestBlockhash,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(meta),
-                       std::move(callback)),
-        true);
-  } else {
-    // No existing last valid block height info, use the current block height
-    // + 150 as the last valid block height.
-    json_rpc_service_->GetSolanaBlockHeight(
-        chain_id,
-        base::BindOnce(&SolanaTxManager::OnGetBlockHeightForBlockhash,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(meta),
-                       std::move(callback), blockhash));
-  }
+  GetSolanaBlockTracker().GetLatestBlockhash(
+      chain_id,
+      base::BindOnce(&SolanaTxManager::OnGetLatestBlockhash,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(meta),
+                     std::move(callback)),
+      false);
 }
 
 void SolanaTxManager::OnGetBlockHeightForBlockhash(
@@ -361,8 +353,12 @@ void SolanaTxManager::OnGetLatestBlockhash(std::unique_ptr<SolanaTxMeta> meta,
   }
 
   meta->set_status(mojom::TransactionStatus::Approved);
-  meta->tx()->message()->set_recent_blockhash(latest_blockhash);
-  meta->tx()->message()->set_last_valid_block_height(last_valid_block_height);
+  // A launch mint is already signed over the message the page built. Replacing
+  // the blockhash makes that signature belong to a message the wallet never sends.
+  if (!meta->tx()->IsPartialSigned()) {
+    meta->tx()->message()->set_recent_blockhash(latest_blockhash);
+    meta->tx()->message()->set_last_valid_block_height(last_valid_block_height);
+  }
   auto signed_transaction = meta->tx()->GetSignedTransactionBytes(
       &keyring_service(), meta->from(), nullptr);
   if (!signed_transaction) {
@@ -443,6 +439,7 @@ void SolanaTxManager::OnSendSolanaTransaction(
     meta->set_tx_hash(tx_hash);
   } else {
     meta->set_status(mojom::TransactionStatus::Error);
+    static_cast<SolanaTxMeta*>(meta.get())->set_send_error(error_message);
   }
 
   if (!tx_state_manager().AddOrUpdateTx(*meta)) {
@@ -1161,8 +1158,10 @@ void SolanaTxManager::GetSolanaTxFeeEstimation(
                               mojom::SolanaFeeEstimationPtr estimation,
                               mojom::SolanaProviderError error,
                               const std::string& error_message) {
-                             std::move(callback).Run(std::move(estimation),
-                                                     error, error_message);
+                             std::move(callback).Run(
+                                 estimation ? std::move(estimation)
+                                            : mojom::SolanaFeeEstimation::New(),
+                                 error, error_message);
                            },
                            std::move(callback)));
 }

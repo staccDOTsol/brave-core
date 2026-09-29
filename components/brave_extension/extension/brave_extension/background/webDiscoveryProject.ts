@@ -68,7 +68,8 @@ function onCommitted (details: chrome.webNavigation.WebNavigationTransitionCallb
   }
 }
 
-if (!chrome.extension.inIncognitoContext) {
+// Creator actions also use this background page when Web Discovery is absent.
+if (!chrome.extension.inIncognitoContext && chrome.webDiscovery) {
   const WEB_DISCOVERY_PREF_KEY = 'brave.web_discovery_enabled'
   const WEB_DISCOVERY_DISABLED_BY_POLICY_KEY = 'brave.web_discovery_disabled_by_policy'
 

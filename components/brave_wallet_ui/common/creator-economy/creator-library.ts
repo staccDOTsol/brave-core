@@ -3,6 +3,11 @@
 // License, v. 2.0. https://mozilla.org/MPL/2.0/.
 
 /** A local bookmark is not a verified creator identity, claim, or entitlement. */
+import {
+  socialContext,
+  socialURL,
+} from '../../../creator_economy/common/social-context'
+
 export interface CreatorBookmark {
   url: string
   label: string
@@ -119,6 +124,12 @@ export function creatorFromURL(value: string): CreatorBookmark | null {
     label = parts[0]
     namespace = JSON.stringify([platform, label.slice(4)])
     profileURL = `https://vimeo.com/${label}`
+  } else if (socialURL(url.href)) {
+    const context = socialContext(url.href)
+    if (!context?.profileURL || context.contentURL) return null
+    platform = context.platform.toLowerCase()
+    profileURL = context.profileURL
+    label = context.label
   } else if (parts.length > 0) {
     return null
   }

@@ -1,4 +1,4 @@
-import { copyFileSync, mkdirSync, readdirSync, writeFileSync, readFileSync, createReadStream, statSync } from 'node:fs'
+import { copyFileSync, mkdirSync, mkdtempSync, rmdirSync, readdirSync, writeFileSync, readFileSync, createReadStream, statSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
 import { resolve, join, basename } from 'node:path'
 import { createHash } from 'node:crypto'
@@ -13,7 +13,7 @@ const files = (directory) => readdirSync(directory, { withFileTypes: true }).fla
 
 export async function buildRelease({ target, run, pnpm, jobs }) {
   const plan = releasePlan(target)
-  const destination = resolve('faircreators-release')
+  const destination = resolve('root-release')
   const output = resolve('../out', plan.directory)
   mkdirSync(destination, { recursive: true })
   const buildArgs = [...plan.args, '--ninja', `j:${jobs}`]
@@ -42,7 +42,7 @@ export async function buildRelease({ target, run, pnpm, jobs }) {
       ...auth, `DEVELOPMENT_TEAM=${team}`, 'CODE_SIGN_STYLE=Automatic',
       'CODE_SIGN_IDENTITY=Apple Development', 'PROVISIONING_PROFILE_SPECIFIER=',
       `brave_version_build=${required('GITHUB_RUN_NUMBER')}.${required('GITHUB_RUN_ATTEMPT')}`, 'archive'])
-    const exportOptions = resolve('../out/FairCreators-ExportOptions.plist')
+    const exportOptions = resolve('../out/Root-ExportOptions.plist')
     writeFileSync(exportOptions, `<?xml version="1.0" encoding="UTF-8"?><plist version="1.0"><dict>
       <key>method</key><string>app-store-connect</string><key>destination</key><string>export</string>
       <key>teamID</key><string>${team}</string><key>signingStyle</key><string>automatic</string>
@@ -56,7 +56,7 @@ export async function buildRelease({ target, run, pnpm, jobs }) {
     if (plist.CFBundleIdentifier !== 'com.faircreators.ios.browser' ||
         !plist.CFBundleSupportedPlatforms?.includes('iPhoneOS')) throw new Error('Incorrect iOS app identity or platform')
   } else if (target === 'android') {
-    const aab = join(destination, 'FairCreators-android-arm64.aab')
+    const aab = join(destination, 'Root-android-arm64.aab')
     copyFileSync(join(output, 'apks/ChromePublic.aab'), aab)
     // Chromium's default signing material must not survive in the release bundle.
     await run('python3', ['-c', `import zipfile,sys,os,re
@@ -81,19 +81,34 @@ os.replace(p+'.unsigned',p)`, aab])
     const apks = join(output, 'FairCreators.apks')
     await run(java, ['-jar', bundletool, 'build-apks', `--bundle=${aab}`, `--output=${apks}`, '--mode=universal',
       `--ks=${store}`, `--ks-key-alias=${alias}`, `--ks-pass=file:${passwordFile}`, `--key-pass=file:${passwordFile}`])
-    const apk = join(destination, 'FairCreators-android-arm64.apk')
+    const apk = join(destination, 'Root-android-arm64.apk')
     await run('python3', ['-c', 'import zipfile,sys; z=zipfile.ZipFile(sys.argv[1]); open(sys.argv[2],"wb").write(z.read("universal.apk"))', apks, apk])
     const apksigner = files(resolve('../third_party/android_sdk/public/build-tools')).find((path) => basename(path) === 'apksigner')
     if (!apksigner) throw new Error('Android SDK apksigner is missing')
     const verification = execFileSync(apksigner, ['verify', '--verbose', '--print-certs', apk], { encoding: 'utf8' })
     if (!verification.toLowerCase().includes(required('ANDROID_SIGNING_SHA256').toLowerCase())) throw new Error('APK signer does not match FairCreators release key')
   } else if (target === 'macos') {
-    for (const path of files(join(output, 'packaged')).filter((p) => /FairCreators.*\.(dmg|zip)$/.test(basename(p)))) {
-      if (path.endsWith('.dmg')) await run('xcrun', ['stapler', 'validate', path])
+    for (const path of files(join(output, 'packaged')).filter((p) => /^Root-.*\.(dmg|zip)$/.test(basename(p)))) {
+      if (path.endsWith('.dmg')) {
+        await run('xcrun', ['stapler', 'validate', path])
+        const mount = mkdtempSync(join(destination, '.verify-dmg-'))
+        let mounted = false
+        try {
+          await run('hdiutil', ['attach', '-readonly', '-nobrowse', '-mountpoint', mount, path])
+          mounted = true
+          const app = join(mount, 'Root.app')
+          await run('codesign', ['--verify', '--deep', '--strict', app])
+          await run('/usr/sbin/spctl', ['--assess', '--type', 'execute', app])
+          await run('xcrun', ['stapler', 'validate', app])
+        } finally {
+          if (mounted) await run('hdiutil', ['detach', mount])
+          rmdirSync(mount)
+        }
+      }
       copyFileSync(path, join(destination, basename(path)))
     }
   } else if (target === 'windows') {
-    copyFileSync(join(output, 'brave_installer.exe'), join(destination, 'FairCreators-windows-x64-setup.exe'))
+    copyFileSync(join(output, 'brave_installer.exe'), join(destination, 'Root-windows-x64-setup.exe'))
   } else {
     for (const path of files(output).filter((p) => /\.(deb|rpm)$/.test(p))) {
       copyFileSync(path, join(destination, basename(path)))

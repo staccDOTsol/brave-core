@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "name": "Brave",
+  "name": "Root",
   "manifest_version": 2,
   "description": "__MSG_appName__",
   "default_locale": "en_US",
@@ -12,7 +12,7 @@
     "128": "assets/img/icon-128.png",
     "256": "assets/img/icon-256.png"
   },
-  "MAYBE_background":{
+  "background": {
     "scripts": [
       "out/brave_extension_background.bundle.js"
     ],
@@ -29,7 +29,31 @@
       ],
       "run_at": "document_start",
       "all_frames": true
+    },
+    {
+      "matches": [
+        "https://*.x.com/*",
+        "https://*.twitter.com/*",
+        "https://*.youtube.com/*",
+        "https://*.instagram.com/*",
+        "https://*.tiktok.com/*",
+        "https://*.facebook.com/*",
+        "https://*.reddit.com/*",
+        "https://*.twitch.tv/*",
+        "https://*.threads.net/*",
+        "https://*.threads.com/*",
+        "https://*.linkedin.com/*",
+        "https://*.bsky.app/*"
+      ],
+      "js": [
+        "out/creator_overlays.bundle.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
     }
+  ],
+  "web_accessible_resources": [
+    "out/creator_trade_page.bundle.js"
   ],
   "permissions": [
     "activeTab",

@@ -285,38 +285,38 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       <if expr="_is_chrome_for_testing_branded">
         <then>
           <message name="IDS_PRODUCT_NAME" desc="The Brave for Testing application name" translateable="false">
-            Brave for Testing
+            Root for Testing
           </message>
           <message name="IDS_SHORT_PRODUCT_NAME" desc="The Brave for Testing application short name." translateable="false">
-            Brave for Testing
+            Root for Testing
           </message>
         </then>
         <else>
           <message name="IDS_PRODUCT_NAME" desc="The Brave application name" translateable="false">
-            Brave
+            Root
           </message>
           <message name="IDS_SHORT_PRODUCT_NAME" desc="The Brave application short name." translateable="false">
-            Brave
+            Root
           </message>
         </else>
       </if>
       <message name="IDS_APP_MENU_YOUR_CHROME_HEADER" desc="Header title for the Your Brave section in the main App Menu">
-        Your Brave
+        Your Root
       </message>
       <if expr="is_win">
-        <message name="IDS_SXS_SHORTCUT_NAME">Brave Nightly</message>
-        <message name="IDS_SHORTCUT_NAME_BETA">Brave Beta</message>
-        <message name="IDS_SHORTCUT_NAME_DEV">Brave Dev</message>
+        <message name="IDS_SXS_SHORTCUT_NAME">Root Nightly</message>
+        <message name="IDS_SHORTCUT_NAME_BETA">Root Beta</message>
+        <message name="IDS_SHORTCUT_NAME_DEV">Root Dev</message>
         <message name="IDS_PRODUCT_DESCRIPTION" desc="Browser description">
-          Brave is a web browser that runs webpages and applications with lightning speed. It's fast, stable, and easy to use. Browse the web more safely with malware and phishing protection built into Brave.
+          Root is a web browser that runs webpages and applications with lightning speed. It's fast, stable, and easy to use. Browse the web more safely with malware and phishing protection built into Root.
         </message>
         <message name="IDS_WELCOME_TO_CHROME" desc="Welcoming text announced via screen readers the first time Brave is launched at the conclusion of installation.">
-          Welcome to Brave; new browser window opened
+          Welcome to Root; new browser window opened
         </message>
       </if>
       <if expr="is_macosx or is_linux">
         <message name="IDS_FIRST_RUN_DIALOG_WINDOW_TITLE" desc="Window title of First Run dialog on Mac and Linux, displayed in title bar">
-          Welcome to Brave
+          Welcome to Root
         </message>
       </if>
       <if expr="is_linux">
@@ -360,7 +360,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       </if>
       <if expr="not is_macosx and not is_chromeos">
         <message name="IDS_TASK_MANAGER_TITLE" desc="The title of the Task Manager window">
-          Task Manager - Brave
+          Task Manager - Root
         </message>
       </if>
       <message name="IDS_TASK_MANAGER_SEARCH_PLACEHOLDER" desc="The placeholder text for the Search bar in the Task Manager window">
@@ -443,12 +443,12 @@ New bookmarks can’t be saved in your account until you delete some. If you sig
         <if expr="_is_chrome_for_testing_branded">
           <then>
             <message name="IDS_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in tabs and popup windows">
-              <ph name="PAGE_TITLE">$1<ex>Brave</ex></ph> - Brave for Testing
+              <ph name="PAGE_TITLE">$1<ex>Root</ex></ph> - Root for Testing
             </message>
           </then>
           <else>
             <message name="IDS_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in tabs and popup windows">
-              <ph name="PAGE_TITLE">$1<ex>Brave</ex></ph> - Brave
+              <ph name="PAGE_TITLE">$1<ex>Root</ex></ph> - Root
             </message>
           </else>
         </if>
@@ -456,25 +456,25 @@ New bookmarks can’t be saved in your account until you delete some. If you sig
       <if expr="is_chromeos">
         <!-- Browser Window Title Format -->
         <message name="IDS_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in tabbed browser windows">
-          Brave - <ph name="PAGE_TITLE">$1<ex>Brave</ex></ph>
+          Root - <ph name="PAGE_TITLE">$1<ex>Root</ex></ph>
         </message>
       </if>
       <if expr="not is_chromeos and not is_macosx">
         <!-- Captive Portal Browser Window Title Format -->
         <message name="IDS_CAPTIVE_PORTAL_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in captive portal popup windows">
-          <ph name="PAGE_TITLE">$1<ex>Brave</ex></ph> - Network Sign-in - Brave
+          <ph name="PAGE_TITLE">$1<ex>Root</ex></ph> - Network Sign-in - Root
         </message>
       </if>
       <if expr="is_chromeos">
         <!-- Captive Portal Browser Window Title Format -->
         <message name="IDS_CAPTIVE_PORTAL_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in captive portal popup windows">
-          Brave - Network Sign-in - <ph name="PAGE_TITLE">$1<ex>Brave</ex></ph>
+          Root - Network Sign-in - <ph name="PAGE_TITLE">$1<ex>Root</ex></ph>
         </message>
       </if>
       <if expr="is_macosx">
         <!-- Captive Portal Browser Window Title Format -->
         <message name="IDS_CAPTIVE_PORTAL_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in captive portal popup windows">
-          <ph name="PAGE_TITLE">$1<ex>Brave</ex></ph> - Network Sign-in
+          <ph name="PAGE_TITLE">$1<ex>Root</ex></ph> - Network Sign-in
         </message>
       </if>
       <!-- Accessible window title format - includes the channel, and the same
@@ -482,28 +482,28 @@ New bookmarks can’t be saved in your account until you delete some. If you sig
       <if expr="_is_chrome_for_testing_branded">
         <then>
           <message name="IDS_ACCESSIBLE_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for the accessible name of a tabbed browser window">
-            <ph name="PAGE_TITLE">$1<ex>Brave</ex></ph> - Brave for Testing
+            <ph name="PAGE_TITLE">$1<ex>Root</ex></ph> - Root for Testing
           </message>
         </then>
         <else>
           <message name="IDS_ACCESSIBLE_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for the accessible name of a tabbed browser window">
-            <ph name="PAGE_TITLE">$1<ex>Brave</ex></ph> - Brave
+            <ph name="PAGE_TITLE">$1<ex>Root</ex></ph> - Root
           </message>
         </else>
       </if>
       <message name="IDS_ACCESSIBLE_BETA_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for the accessible name of a tabbed browser window for the beta channel version of the browser">
-        <ph name="PAGE_TITLE">$1<ex>Brave</ex></ph> - Brave Beta
+        <ph name="PAGE_TITLE">$1<ex>Root</ex></ph> - Root Beta
       </message>
       <message name="IDS_ACCESSIBLE_DEV_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for the accessible name of a tabbed browser window for the developer (dev) channel version of the browser">
-        <ph name="PAGE_TITLE">$1<ex>Brave</ex></ph> - Brave Dev
+        <ph name="PAGE_TITLE">$1<ex>Root</ex></ph> - Root Dev
       </message>
       <message name="IDS_ACCESSIBLE_CANARY_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for the accessible name of a tabbed browser window for the canary (nightly build) channel version of the browser">
-        <ph name="PAGE_TITLE">$1<ex>Brave</ex></ph> - Brave Canary
+        <ph name="PAGE_TITLE">$1<ex>Root</ex></ph> - Root Canary
       </message>
       <if expr="_is_chrome_for_testing_branded">
         <then>
           <message name="IDS_ABOUT_VERSION_COMPANY_NAME" desc="Company name on the about pages">
-            Brave LLC
+            Root
           </message>
           <message name="IDS_ABOUT_VERSION_COPYRIGHT" desc="Copyright information on the about pages">
             Copyright © <ph name="YEAR">{0,date,y}<ex>2016</ex></ph> The Brave Authors. All rights reserved.
@@ -511,7 +511,7 @@ New bookmarks can’t be saved in your account until you delete some. If you sig
         </then>
         <else>
           <message name="IDS_ABOUT_VERSION_COMPANY_NAME" desc="Company name on the about pages">
-            Brave Software Inc
+            Root
           </message>
           <message name="IDS_ABOUT_VERSION_COPYRIGHT" desc="Copyright information on the about pages">
             Copyright © <ph name="YEAR">{0,date,y}<ex>2016</ex></ph> The Brave Authors. All rights reserved.
@@ -572,7 +572,7 @@ New bookmarks can’t be saved in your account until you delete some. If you sig
         </message>
       </if>
       <message name="IDS_ACCNAME_APP" desc="The accessible name for the app menu." translateable="false">
-        Brave
+        Root
       </message>
       <!-- Hung Browser Detector -->
       <if expr="is_win">
@@ -604,26 +604,26 @@ New bookmarks can’t be saved in your account until you delete some. If you sig
       </if>
       <!-- Default Browser messages -->
       <message name="IDS_FR_CUSTOMIZE_DEFAULT_BROWSER" desc="Default browser checkbox label">
-        Make Brave the default browser
+        Make Root the default browser
       </message>
       <message name="IDS_DEFAULT_BROWSER_CHANGED_MESSAGE" desc="Body of the notification shown when Brave is no longer the default browser.">
-        Brave is no longer your default browser. Make Brave the default browser?
+        Root is no longer your default browser. Make Root the default browser?
       </message>
       <if expr="is_win">
         <message name="IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_PAGE_TITLE" desc="Title of the default browser visual guided setter page.">
-          Set Brave as your default browser
+          Set Root as your default browser
         </message>
         <message name="IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_HEADER_TITLE" desc="Header text of the default browser visual guided setter.">
-          Set Brave as your default browser
+          Set Root as your default browser
         </message>
         <message name="IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_CONTENT_TITLE" desc="Content title of the default browser visual guided setter.">
-          Set Brave as your default browser
+          Set Root as your default browser
         </message>
         <message name="IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_CONTENT_DESCRIPTION" desc="Body text of the default browser visual guided setter.">
-          Keep your passwords, bookmarks, and history perfectly synced across devices by setting Brave as your default browser.
+          Keep your passwords, bookmarks, and history perfectly synced across devices by setting Root as your default browser.
         </message>
         <message name="IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_INSTRUCTION_STEP_2" desc="Instruction step 2 of the default browser visual guided setter. $1 is the bold button name.">
-          Click <ph name="BEGIN_BOLD">&lt;strong&gt;</ph>Yes<ph name="END_BOLD">&lt;/strong&gt;</ph> in the Windows notification to pin Brave to your taskbar for quick access.
+          Click <ph name="BEGIN_BOLD">&lt;strong&gt;</ph>Yes<ph name="END_BOLD">&lt;/strong&gt;</ph> in the Windows notification to pin Root to your taskbar for quick access.
         </message>
       </if>
       <if expr="use_titlecase">
@@ -683,7 +683,7 @@ Brave is unable to recover your settings.
         Brave lets you know if your passwords are ever compromised
       </message>
       <message name="IDS_PASSWORD_MANAGER_TITLE_BRAND" desc="The product name used in the title of the password bubble." translateable="false">
-        Brave
+        Root
       </message>
       <message name="IDS_PASSWORD_MANAGER_BRAND_NAME" desc="This string is used both as a standalone label and injected into sentences. Please translate this as a standalone noun in the Nominative case to ensure it looks correct in titles. Sentence structures surrounding it may read slightly awkwardly.">
         Password Manager
@@ -778,15 +778,15 @@ Brave is unable to recover your settings.
           Uninstall
         </message>
         <message name="IDS_PIN_INFOBAR_TEXT" desc="Text to show in an infobar when Brave is not pinned to the taskbar.">
-          Pin Brave to your taskbar to get to it quickly anytime
+          Pin Root to your taskbar to get to it quickly anytime
         </message>
         <message name="IDS_PIN_INFOBAR_BUTTON" desc="Label for the button on an infobar offering to pin Brave to the taskbar. Pins Brave when clicked.">
-          Pin Brave
+          Pin Root
         </message>
       </if>
       <if expr="is_macosx">
         <message name="IDS_PIN_INFOBAR_DOCK_TEXT" desc="Text to show in an infobar when Brave is not in the Dock.">
-          Keep Brave in your Dock to get to it quickly anytime
+          Keep Root in your Dock to get to it quickly anytime
         </message>
         <message name="IDS_PIN_INFOBAR_DOCK_BUTTON" desc="Label for the button on an infobar offering to keep Brave in the Dock.">
           Keep in Dock
@@ -796,98 +796,98 @@ Brave is unable to recover your settings.
             <!-- Pin InfoBar Experimental strings -->
       <if expr="is_win">
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_1" translateable="false" desc="Message text for the experimental pin infobar version 1 on Windows">
-          Open Brave with one click. Pin it for faster access.
+          Open Root with one click. Pin it for faster access.
         </message>
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_2" translateable="false" desc="Message text for the experimental pin infobar version 2 on Windows">
-          Launch the web faster. Pin Brave to your taskbar.
+          Launch the web faster. Pin Root to your taskbar.
         </message>
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_3" translateable="false" desc="Message text for the experimental pin infobar version 3 on Windows">
-          Keep Brave within reach anytime you browse.
+          Keep Root within reach anytime you browse.
         </message>
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_BUTTON_3" translateable="false" desc="Button text for the experimental pin infobar version 3 on Windows">
-          Pin Brave Now
+          Pin Root Now
         </message>
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_4" translateable="false" desc="Message text for the experimental pin infobar version 4 on Windows">
-          Optimize your workflow. Add Brave to your taskbar.
+          Optimize your workflow. Add Root to your taskbar.
         </message>
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_6" translateable="false" desc="Message text for the experimental pin infobar version 6 on Windows">
-          Simplify your startup. Pin Brave to your taskbar.
+          Simplify your startup. Pin Root to your taskbar.
         </message>
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_BUTTON_8" translateable="false" desc="Button text for the experimental pin infobar version 8 on Windows">
-          Pin Brave
+          Pin Root
         </message>
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_9" translateable="false" desc="Message text for the experimental pin infobar version 9 on Windows">
-          For a better desktop experience, pin Brave to your taskbar.
+          For a better desktop experience, pin Root to your taskbar.
         </message>
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_MESSAGE_10" translateable="false" desc="Message text for the experimental pin infobar version 10 on Windows">
-          Start browsing instantly. Pin Brave to your taskbar.
+          Start browsing instantly. Pin Root to your taskbar.
         </message>
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_BUTTON_10" translateable="false" desc="Button text for the experimental pin infobar version 10 on Windows">
-          Pin Brave
+          Pin Root
         </message>
       </if>
       <if expr="is_macosx">
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_1" translateable="false" desc="Message text for the experimental pin infobar version 1 on Mac">
-          Open Brave with one click. Keep it in your Dock for faster access.
+          Open Root with one click. Keep it in your Dock for faster access.
         </message>
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_2" translateable="false" desc="Message text for the experimental pin infobar version 2 on Mac">
-          Launch the web faster. Keep Brave in your Dock.
+          Launch the web faster. Keep Root in your Dock.
         </message>
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_3" translateable="false" desc="Message text for the experimental pin infobar version 3 on Mac">
-          Keep Brave within reach anytime you browse.
+          Keep Root within reach anytime you browse.
         </message>
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_4" translateable="false" desc="Message text for the experimental pin infobar version 4 on Mac">
-          Optimize your workflow. Add Brave to your Dock.
+          Optimize your workflow. Add Root to your Dock.
         </message>
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_6" translateable="false" desc="Message text for the experimental pin infobar version 6 on Mac">
-          Simplify your startup. Keep Brave in your Dock.
+          Simplify your startup. Keep Root in your Dock.
         </message>
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_9" translateable="false" desc="Message text for the experimental pin infobar version 9 on Mac">
-          For a better desktop experience, keep Brave in your Dock.
+          For a better desktop experience, keep Root in your Dock.
         </message>
         <message name="IDS_PIN_INFOBAR_EXPERIMENTAL_DOCK_MESSAGE_10" translateable="false" desc="Message text for the experimental pin infobar version 10 on Mac">
-          Start browsing instantly. Keep Brave in your Dock.
+          Start browsing instantly. Keep Root in your Dock.
         </message>
       </if>
 
       <message name="IDS_DEFAULT_BROWSER_INFOBAR_TEXT" desc="Text to show in an infobar when Brave is not the current default browser.">
-        Brave isn't your default browser
+        Root isn't your default browser
       </message>
       <message name="IDS_DEFAULT_BROWSER_PIN_INFOBAR_TEXT" desc="Text to show in an infobar when Brave is not the current default browser and can be pinned to the taskbar.">
-        Set Brave as your default browser and pin it to your taskbar
+        Set Root as your default browser and pin it to your taskbar
       </message>
       <if expr="not is_android and not is_chromeos">
         <message name="IDS_DEFAULT_BROWSER_MODAL_TITLE_WITH_SETTINGS_ILLUSTRATION" desc="Title of the default browser modal with settings illustration.">
-          Set Brave as your default browser
+          Set Root as your default browser
         </message>
         <message name="IDS_DEFAULT_BROWSER_MODAL_BODY_WITH_SETTINGS_ILLUSTRATION" desc="Body text of the default browser modal with settings illustration.">
-          Keep your passwords, bookmarks, and history perfectly synced across devices. Easily access the features you know and love by updating your default browser to Brave.
+          Keep your passwords, bookmarks, and history perfectly synced across devices. Easily access the features you know and love by updating your default browser to Root.
         </message>
         <message name="IDS_DEFAULT_BROWSER_MODAL_BODY_WITH_SETTINGS_ILLUSTRATION_UNPINNED" desc="Body text of the default browser modal with settings illustration when Brave is not pinned to the taskbar.">
-          Keep your passwords, bookmarks, and history perfectly synced across devices. Easily access the features you know and love by updating your default browser to Brave. Brave will be pinned to your taskbar for quick access.
+          Keep your passwords, bookmarks, and history perfectly synced across devices. Easily access the features you know and love by updating your default browser to Root. Root will be pinned to your taskbar for quick access.
         </message>
         <message name="IDS_DEFAULT_BROWSER_MODAL_TITLE_WITHOUT_SETTINGS_ILLUSTRATION" desc="Title of the default browser modal without settings illustration.">
-          Set Brave as your default browser
+          Set Root as your default browser
         </message>
         <message name="IDS_DEFAULT_BROWSER_MODAL_BODY_WITHOUT_SETTINGS_ILLUSTRATION" desc="Body text of the default browser modal without settings illustration.">
-          Keep your passwords, bookmarks, and history perfectly synced across devices. Easily access the features you know and love by updating your default browser to Brave.
+          Keep your passwords, bookmarks, and history perfectly synced across devices. Easily access the features you know and love by updating your default browser to Root.
         </message>
         <message name="IDS_DEFAULT_BROWSER_MODAL_BODY_WITHOUT_SETTINGS_ILLUSTRATION_UNPINNED" desc="Body text of the default browser modal without settings illustration when Brave is not pinned to the taskbar.">
-          Keep your passwords, bookmarks, and history perfectly synced across devices. Easily access the features you know and love by updating your default browser to Brave. Brave will be pinned to your taskbar for quick access.
+          Keep your passwords, bookmarks, and history perfectly synced across devices. Easily access the features you know and love by updating your default browser to Root. Root will be pinned to your taskbar for quick access.
         </message>
         <message name="IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_TITLE" desc="Title of the dialog prompting the user to set Brave as the default browser.">
-          Set Brave as your default browser
+          Set Root as your default browser
         </message>
         <message name="IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_BODY" desc="Main explanatory text in the default browser dialog.">
-          Get easy access to the features you know, love, and trust by setting Brave as your default browser.
+          Get easy access to the features you know, love, and trust by setting Root as your default browser.
         </message>
         <message name="IDS_DEFAULT_BROWSER_SUCCESS_TOAST_BODY" desc="Body text of the toast shown when Brave is successfully set as the default browser.">
-          Brave is now your default browser
+          Root is now your default browser
         </message>
         <message name="IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_STEPS_PINNED_COMBINED" desc="Numbered instructions. $1, $2 and $3 are the bold button names.">
           1. Click <ph name="BUTTON_LABEL">$1<ex>Open settings</ex></ph> below
 2. Click <ph name="BUTTON_2">$2<ex>Set default</ex></ph> in your Windows settings
-3. Click <ph name="BUTTON_3">$3<ex>Yes</ex></ph> in the Windows notification to pin Brave to your taskbar for quick access
+3. Click <ph name="BUTTON_3">$3<ex>Yes</ex></ph> in the Windows notification to pin Root to your taskbar for quick access
         </message>
       </if>
       <if expr="is_win or is_macosx">
@@ -1101,7 +1101,7 @@ Brave is unable to recover your settings.
 
       <!-- Main Brave menu -->
       <message name="IDS_APPMENU_TOOLTIP" desc="The tooltip to show for the browser menu">
-        Customize and control Brave
+        Customize and control Root
       </message>
 
       <message name="IDS_APPMENU_TOOLTIP_UPDATE_AVAILABLE" desc="The tooltip to show for the browser menu when an update is available">
@@ -1161,7 +1161,7 @@ Brave is unable to recover your settings.
 
       <if expr="is_macosx">
         <message name="IDS_APP_MENU_PRODUCT_NAME" desc="The application's short name, used for the Mac's application menu, activity monitor, etc. This should be less than 16 characters. Example: Brave, not Brave." translateable="false">
-          Brave
+          Root
         </message>
         <message name="IDS_HELPER_NAME" desc="The helper application's name.  Should contain the Brave application name (IDS_PRODUCT_NAME). Example: Brave Helper.">
           Brave Helper
@@ -1190,7 +1190,7 @@ Brave is unable to recover your settings.
 
       <!-- Brave sign-in page -->
       <message name="IDS_CHROME_SIGNIN_TITLE" desc="Title on the about:chrome-signin page" translateable="false">
-        Brave
+        Root
       </message>
 
       <!-- DICE sign-in promo strings -->

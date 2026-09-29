@@ -51,7 +51,9 @@ class InternalCodeSignConfig(ChromiumCodeSignConfig):
         # its _notarize always has the default value STAPLE instead of the value
         # from the base config from which it was created. We therefore refer to
         # invoker.args.notarize, which does contain the correct value.
-        return self.invoker.args.notarize == NotarizeAndStapleLevel.STAPLE
+        base_config = getattr(self, 'base_config', self)
+        return (self.invoker.args.notarize == NotarizeAndStapleLevel.STAPLE
+                and not base_config.is_in_sign_chrome)
 
     @property
     def app_dir(self):

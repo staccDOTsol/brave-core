@@ -6,6 +6,8 @@ import styled from 'styled-components'
 
 export const Hub = styled.main`
   color: var(--leo-color-text-primary);
+  --leo-color-button-background: #eac867;
+  --leo-color-schemes-on-primary: #101115;
   width: 100%;
   max-width: 980px;
   margin: 0 auto;

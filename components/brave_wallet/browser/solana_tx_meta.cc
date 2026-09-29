@@ -42,7 +42,9 @@ mojom::TransactionInfoPtr SolanaTxMeta::ToTransactionInfo() const {
   return mojom::TransactionInfo::New(
       id_, from_.Clone(), tx_hash_,
       mojom::TxDataUnion::NewSolanaTxData(tx_->ToSolanaTxData()), status_,
-      tx_->tx_type(), std::vector<std::string>() /* tx_params */,
+      tx_->tx_type(),
+      send_error_.empty() ? std::vector<std::string>()
+                          : std::vector<std::string>{send_error_},
       std::vector<std::string>() /* tx_args */,
       base::Milliseconds(created_time_.InMillisecondsSinceUnixEpoch()),
       base::Milliseconds(submitted_time_.InMillisecondsSinceUnixEpoch()),

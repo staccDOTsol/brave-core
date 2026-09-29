@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grit-part>
   <message name="IDS_BRAVE_WELCOME_TITLE" desc="A title for screen on the first step of welcome page">
-  Privacy. By Default.
+  Welcome to Root
 </message>
 
 <message name="IDS_BRAVE_WELCOME_DESC" desc="A subtitle for screen on the first step of welcome page">
-  Get Brave protection on every link you click. Just set Brave as default and browse. Privately.
+  Your browser. Your creators. Discover original posts and keep the creators you care about close.
 </message>
 
 <message name="IDS_BRAVE_WELCOME_IMPORT_SETTINGS_TITLE" desc="A title for screen to select browser">
@@ -49,7 +49,7 @@
 </message>
 
 <message name="IDS_BRAVE_WELCOME_SET_DEFAULT_BUTTON_LABEL" desc="A button that sets Brave browser as default">
-  Set Brave as default browser
+  Set Root as default browser
 </message>
 
 <message name="IDS_BRAVE_WELCOME_SELECT_ALL_BUTTON_LABEL" desc="A button label to select all profiles">
@@ -89,7 +89,7 @@
 </message>
 
 <message name="IDS_BRAVE_WELCOME_SELECT_THEME_NOTE" desc="A note for user to change theme in settings">
-  You can change this at any time in Brave settings.
+  You can change this at any time in Root settings.
 </message>
 
 <message name="IDS_BRAVE_WELCOME_SELECT_THEME_SYSTEM_LABEL" desc="A label to match system setting">
@@ -129,7 +129,7 @@
 </message>
 
 <message name="IDS_WELCOME_HEADER" desc="A message which will appear as the header on the Welcome UI if the user has never run Brave before.">
-  Welcome to Brave
+  Welcome to Root
 </message>
 
 </grit-part>

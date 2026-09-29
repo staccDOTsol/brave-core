@@ -158,6 +158,11 @@ std::optional<GURL> GetURLForKnownChainId(std::string_view chain_id) {
     return std::nullopt;
   }
 
+  if (chain_id_lower == mojom::kSolanaMainnet) {
+    return GURL(
+        "https://eu.fluxrpc.com/?key=ab9278e1-6430-41ab-aee0-ac6b759a1fe4");
+  }
+
   return GURL(absl::StrFormat("https://%s.wallet.brave.com", *subdomain));
 }
 
@@ -1203,6 +1208,12 @@ GURL NetworkManager::GetNetworkURL(std::string_view chain_id,
                                    mojom::CoinType coin) {
   if (network_url_for_testing_.contains(std::string(chain_id))) {
     return network_url_for_testing_.at(std::string(chain_id));
+  }
+
+  // Solana mainnet always uses Flux. A saved Brave endpoint must not win.
+  if (coin == mojom::CoinType::SOL && chain_id == mojom::kSolanaMainnet) {
+    return GURL(
+        "https://eu.fluxrpc.com/?key=ab9278e1-6430-41ab-aee0-ac6b759a1fe4");
   }
 
   if (auto custom_chain = GetCustomChain(chain_id, coin)) {

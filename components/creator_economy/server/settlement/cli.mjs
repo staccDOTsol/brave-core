@@ -11,6 +11,7 @@ import { configuration, POLICY } from './policy.mjs'
 import { Ledger, json } from './ledger.mjs'
 import { Chains } from './chains.mjs'
 import { tick } from './worker.mjs'
+import { discoverPayouts } from './discovery.mjs'
 
 function privyClient() {
   const read = key => {
@@ -52,8 +53,8 @@ async function initialize(file) {
 async function main() {
   const [command, file, argument] = process.argv.slice(2)
   if (command === 'init-wallets') return initialize(file)
-  assert(['status', 'quote', 'credit', 'run-once', 'run'].includes(command),
-    'Usage: cli.mjs init-wallets|status|quote|credit|run-once|run CONFIG [LAMPORTS|SIGNATURE]')
+  assert(['status', 'quote', 'credit', 'sync', 'run-once', 'run'].includes(command),
+    'Usage: cli.mjs init-wallets|status|quote|credit|sync|run-once|run CONFIG [LAMPORTS|SIGNATURE]')
   const c = configuration(JSON.parse(fs.readFileSync(file, 'utf8')),
     { requireDistributor: command !== 'quote' })
   if (command === 'quote') {
@@ -83,8 +84,12 @@ async function main() {
       for (const receipt of await chains.payout(argument)) ledger.credit(receipt)
       return console.log(json(ledger.summary()))
     }
+    if (command === 'sync') {
+      return console.log(json(await discoverPayouts(ledger, chains.sol, c)))
+    }
     do {
       try {
+        await discoverPayouts(ledger, chains.sol, c)
         // Each state commits before the next external action. Stop once awaiting
         // confirmation, funds, or operator reconciliation.
         for (let n = 0; n < 6; n++) {

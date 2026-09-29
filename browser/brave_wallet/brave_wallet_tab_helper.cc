@@ -232,11 +232,10 @@ void BraveWalletTabHelper::ShowBubble() {
 }
 
 void BraveWalletTabHelper::ShowApproveWalletBubble() {
-  // If the Wallet page is open, then it will try to open the UI.
-  // But the user may have already had the panel UI opened.
-  // We want to avoid a hiding / showing of the panel in that case.
+  // A bubble already on screen may be the portfolio panel. Replace it so the
+  // approval URL is what loads.
   if (IsShowingBubble()) {
-    return;
+    CloseBubble();
   }
 
   ShowBubbleImpl(GetApproveBubbleURL());

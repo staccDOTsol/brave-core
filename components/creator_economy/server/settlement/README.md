@@ -1,15 +1,22 @@
 # Wizards deployer settlement
 
-This separate Node service routes **100% of verified deployer SOL proceeds** to
-the Wizards fanout on Robinhood Chain. With the current mint allocation, the
+This separate Node service allocates **50% of verified deployer SOL proceeds** to
+the Wizards fanout on Robinhood Chain and reserves **50% to buy and burn the
+in-app LST for https://x.com/staccoverflow**. With the current mint allocation, the
 deployer receives half of the 50% referral allocation: 25% of the total mint fee,
 before integer rounding and payout costs. Creator escrow, curation budgets and
 LST backing are not settlement revenue.
 
 ```text
-deployer-only distributor → Solana treasury → Relay → Robinhood WETH receiver
-                                                    → Wizards ERC20 fanout
+deployer-only distributor → Solana treasury
+                            ├─ 50% → Relay → Robinhood WETH → Wizards ERC20 fanout
+                            └─ 50% → reserved for staccoverflow LST buy and burn
 ```
+
+The buy-and-burn executor is not active. Its allocation stays in the treasury
+until the creator pool and mint are verified and that executor is implemented.
+Wizards batches can reserve only the Wizards allocation. Each verified receipt
+is split once, with an indivisible lamport assigned to the buy-and-burn reserve.
 
 The fanout is pinned to `0x1b88A6c6516FD2918905186F21Bb9F5CaA1a15c8`, chain
 4663, with 8,010 shares and collection
@@ -26,16 +33,21 @@ them or change the fanout contract.
 
 The worker starts **after** the creator accounting/controller service isolates
 the deployer fee allocation, converts its LST shares into SOL and pays a
-dedicated distributor. That upstream controller, conversion and authenticated
-payout integration are not implemented here. Never configure a shared creator
+dedicated distributor. The controller implementation is in `../../program`;
+deployment, pool bootstrap, and authenticated browser integration remain pending.
+Never configure a shared creator
 escrow, pool reserve, user wallet or general treasury as `feeDistributor`.
 
-The payout service submits its finalized Solana signature to the `credit`
-command. The worker reads the transaction itself and accepts only successful
+The worker discovers finalized treasury transactions automatically, and the
+`credit` command also accepts an individual signature. It reads the transaction
+itself and accepts only successful
 System Program transfers from the configured distributor into its treasury.
 Each signature/instruction pair is credited once. The source account is a trust
 boundary: transfer provenance alone cannot prove the earlier mint allocation.
-There is no balance sweep, user-supplied credit amount or automatic indexer.
+The scan cursor and verified credits commit atomically, so interrupted pages
+are retried without double credit. An unavailable transaction holds the current
+page; a missing previously recorded history boundary requires an archival RPC.
+There is no balance sweep or user-supplied credit amount.
 Unrelated deposits, including separately supplied gas, are not credited.
 
 ## Installation and empty wallets
@@ -64,6 +76,9 @@ all writers for a complete backup. Do not run independent database copies
 against the same wallets, restore an old snapshot into a live worker, or use the
 settlement wallets for other transactions. Wallet ownership and source/fanout
 identity are checked before signing; each database pins its treasury and source.
+The allocation policy version is pinned too. An existing 100%-Wizards ledger
+cannot be opened under this policy without explicit reconciliation and migration;
+do not create a fresh ledger against previously used settlement wallets.
 
 ## Read-only quote and activation
 
@@ -72,7 +87,7 @@ identity are checked before signing; each database pins its treasury and source.
 node cli.mjs quote /absolute/private/directory/config.json 1000000000
 
 # Set feeDistributor to the actual deployer-only payout source first.
-node cli.mjs credit /absolute/private/directory/config.json FINALIZED_SOLANA_SIGNATURE
+node cli.mjs sync /absolute/private/directory/config.json
 node cli.mjs status /absolute/private/directory/config.json
 
 # Requires separately funded SOL and Robinhood ETH gas reserves.
@@ -82,7 +97,11 @@ FAIRCREATORS_SETTLEMENT_EXECUTE=1 node cli.mjs run /absolute/private/directory/c
 
 `run` is a foreground service loop, not an installed daemon. A process supervisor
 must retain this process and persistent ledger on the deployment host. The
-default batch range is 0.05–1 SOL; smaller balances wait. The SOL reserve is
+`sync`, `run-once`, and each `run` iteration discover one page of finalized
+transactions. `sync` does not sign or spend; repeat it until `caughtUp` is true
+to import older history. `credit` remains available for an individual finalized
+signature. The default Wizards batch range is 0.05–1 SOL of the Wizards half;
+smaller allocations wait. The SOL reserve is
 0.01 SOL, with a 0.0001 SOL transaction-fee cap. The EVM forwarding gas cap is
 0.0001 ETH. Gas must be funded separately; no gas top-up or auto-unwrap is
 implemented. Routing costs reduce the WETH received. All verified received WETH

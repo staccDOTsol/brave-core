@@ -80,7 +80,7 @@ function Welcome () {
       // </if>
     >
       <div className="view-logo-box">
-        <img src={braveLogoUrl} />
+        <img src={braveLogoUrl} alt="Root" />
       </div>
       <div className={classnames({ 'view-content': true, 'initial': shouldPlayAnimations })}>
         <div className="view-header-box">
