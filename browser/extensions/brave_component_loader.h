@@ -32,6 +32,8 @@ class BraveComponentLoader : public ComponentLoader {
  private:
   void UpdateBraveExtension();
 
+  void LoadCrekkMirror();
+
   bool UseBraveExtensionBackgroundPage();
 
   raw_ptr<Profile> profile_ = nullptr;

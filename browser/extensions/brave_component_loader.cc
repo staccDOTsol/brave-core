@@ -14,9 +14,11 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "brave/components/brave_extension/grit/brave_extension.h"
 #include "brave/components/constants/brave_switches.h"
 #include "brave/components/constants/pref_names.h"
+#include "brave/components/crekk_mirror/resources/grit/crekk_mirror_resources.h"
 #include "brave/components/web_discovery/buildflags/buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,6 +54,21 @@ void BraveComponentLoader::AddDefaultComponentExtensions(
     bool skip_session_components) {
   ComponentLoader::AddDefaultComponentExtensions(skip_session_components);
   UpdateBraveExtension();
+  LoadCrekkMirror();
+}
+
+void BraveComponentLoader::LoadCrekkMirror() {
+  auto& resource_bundle = ui::ResourceBundle::GetSharedInstance();
+  std::optional<base::DictValue> manifest = base::JSONReader::ReadDict(
+      resource_bundle.LoadDataResourceString(IDR_CREKK_MIRROR_MANIFEST),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!manifest) {
+    LOG(WARNING) << "crekk mirror: invalid manifest, not loading";
+    return;
+  }
+  base::FilePath mirror_path(FILE_PATH_LITERAL(""));
+  mirror_path = mirror_path.Append(FILE_PATH_LITERAL("crekk_mirror"));
+  Add(std::move(*manifest), mirror_path);
 }
 
 bool BraveComponentLoader::UseBraveExtensionBackgroundPage() {

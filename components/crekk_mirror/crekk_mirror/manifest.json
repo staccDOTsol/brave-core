@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "crekk mirror",
+  "version": "1.0.0",
+  "description": "Solana-RPC shaped calls ride the mirror. Same keys, same bags, solana on art.",
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["hooks.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "MAIN"
+    }
+  ],
+  "permissions": ["webRequest", "declarativeNetRequest", "storage"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "content_security_policy": {},
+  "minimum_chrome_version": "111"
+}
