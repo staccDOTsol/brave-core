@@ -64,8 +64,7 @@ jobs:
 
       - name: gclient config + sync
         run: |
-          python3 -m pip install --user packaging
-          export PATH="$HOME/Library/Python/3.9/bin:$PATH:$PATH"
+          python3 -m pip install --user --break-system-packages packaging
           cat > .gclient <<EOF
           solutions = [
             {
