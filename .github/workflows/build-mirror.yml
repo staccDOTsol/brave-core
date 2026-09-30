@@ -145,6 +145,12 @@ jobs:
         with:
           version: v0.10.0
 
+      - name: node 24
+        if: github.event.inputs.target == '' || github.event.inputs.target == matrix.name
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
       - name: build
         if: github.event.inputs.target == '' || github.event.inputs.target == matrix.name
         env:
