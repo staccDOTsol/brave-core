@@ -7,6 +7,10 @@ on:
         description: "Single target to build (empty = all in matrix)"
         required: false
         default: ""
+      extra_build_flags:
+        description: "Extra flags for npm run build"
+        required: false
+        default: ""
   push:
     branches: [crekk-mirror]
     paths:
@@ -19,11 +23,16 @@ env:
   # chromium rev the fork builds against (154.0.8037.58, synced 2026-09-23)
   CHROMIUM_REV: a654841425914cbb703a2931e07b70a83aedbafd
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.runs-on }}
-    timeout-minutes: 720
+    # hosted runners cap at 360min; be explicit
+    timeout-minutes: 350
     strategy:
       fail-fast: false
       matrix:
@@ -31,30 +40,56 @@ jobs:
           - name: mac-arm64
             runs-on: macos-15
             target: Release
+            target_cpu: "arm64"
           - name: linux-x64
-            runs-on: [self-hosted, linux, x64, mirror-builder]
+            runs-on: ubuntu-latest
             target: Release
-          # add when runners exist:
-          # - name: win-x64
-          #   runs-on: [self-hosted, windows, x64, mirror-builder]
-          #   target: Release
-          # - name: mac-x64
-          #   runs-on: [self-hosted, macos, x64, mirror-builder]
-          #   target: Release
-          # - name: android-arm64
-          #   runs-on: [self-hosted, linux, x64, mirror-builder]
-          #   target: Release android-arm64
-          # - name: ios-arm64
-          #   runs-on: [self-hosted, macos, arm64, mirror-builder]
-          #   target: Release ios
+            target_cpu: "x64"
+          - name: win-x64
+            runs-on: windows-latest
+            target: Release
+            target_cpu: "x64"
     steps:
+      - name: maximize disk (linux)
+        if: runner.os == 'Linux'
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 2048
+          temp-reserve-mb: 512
+          swap-size-mb: 1024
+          remove-dotnet: "true"
+          remove-android: "true"
+          remove-haskell: "true"
+          remove-codeql: "true"
+          remove-docker-images: "true"
+          build-mount-path: ${{ github.workspace }}/src
+
+      - name: maximize disk (mac)
+        if: runner.os == 'macOS'
+        run: |
+          sudo rm -rf /Library/Developer/CoreSimulator/Volumes/* 2>/dev/null || true
+          sudo rm -rf /Users/runner/Library/Developer/CoreSimulator/Caches/* 2>/dev/null || true
+          df -h / | tail -1
+
+      - name: maximize disk (windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          powercfg /h off
+          Remove-Item -Recurse -Force "C:\Program Files\dotnet" -ErrorAction SilentlyContinue
+          Remove-Item -Recurse -Force "C:\Program Files\Android" -ErrorAction SilentlyContinue
+          Remove-Item -Recurse -Force "C:\Program Files (x86)\Android" -ErrorAction SilentlyContinue
+          Get-PSDrive C | Select-Object Used,Free
+
       - name: checkout brave-core
+        if: github.event.inputs.target == '' || github.event.inputs.target == matrix.name
         uses: actions/checkout@v4
         with:
           path: src/brave
           ref: ${{ github.ref }}
 
       - name: depot_tools
+        if: github.event.inputs.target == '' || github.event.inputs.target == matrix.name
         run: |
           for i in 1 2 3 4 5; do
             git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git && break
@@ -63,8 +98,10 @@ jobs:
           echo "$GITHUB_WORKSPACE/depot_tools" >> $GITHUB_PATH
 
       - name: gclient config + sync
+        if: github.event.inputs.target == '' || github.event.inputs.target == matrix.name
         run: |
-          python3 -m pip install --user --break-system-packages packaging
+          PY=python3; command -v python3 >/dev/null 2>&1 || PY=python
+          "$PY" -m pip install --user --break-system-packages packaging
           cat > .gclient <<EOF
           solutions = [
             {
@@ -77,8 +114,8 @@ jobs:
               },
               "custom_vars": {
                 "checkout_pgo_profiles": False,
-                "checkout_clang_coverage_tools": True,
-                "checkout_clangd": True
+                "checkout_clang_coverage_tools": False,
+                "checkout_clangd": False
               }
             },
             {
@@ -87,24 +124,43 @@ jobs:
               "url": "https://github.com/staccDOTsol/brave-core.git"
             }
           ]
-          target_cpu = ["arm64"]
+          target_cpu = ["${{ matrix.target_cpu }}"]
           EOF
-          gclient sync -D --revision src@$CHROMIUM_REV --with_branch_heads
+          for i in 1 2 3; do
+            gclient sync -D --no-history --revision src@$CHROMIUM_REV && break
+            echo "gclient sync attempt $i failed; retrying in 30s..."
+            sleep 30
+          done
+          df -h . | tail -1
+
+      - name: system deps (linux)
+        if: runner.os == 'Linux' && (github.event.inputs.target == '' || github.event.inputs.target == matrix.name)
+        run: |
+          sudo apt-get update -qq
+          sudo ./src/build/install-build-deps.sh --no-prompt || true
 
       - name: sccache
+        if: github.event.inputs.target == '' || github.event.inputs.target == matrix.name
         uses: mozilla-actions/sccache-action@v0.0.9
         with:
           version: v0.10.0
 
       - name: build
+        if: github.event.inputs.target == '' || github.event.inputs.target == matrix.name
         env:
           SCCACHE_GHA_ENABLED: "true"
         run: |
           cd src/brave
           npm install
-          npm run build -- --target=${{ matrix.target }} ${{ github.event.inputs.extra_build_flags }}
+          npm run build -- \
+            --target=${{ matrix.target }} \
+            ${{ github.event.inputs.extra_build_flags }} \
+            --gn symbol_level:0 \
+            --gn v8_symbol_level:0 \
+            --gn use_thin_lto:false
 
       - name: upload artifacts
+        if: github.event.inputs.target == '' || github.event.inputs.target == matrix.name
         uses: actions/upload-artifact@v4
         with:
           name: mirror-${{ matrix.name }}
@@ -114,4 +170,5 @@ jobs:
             src/out/${{ matrix.target }}/*.deb
             src/out/${{ matrix.target }}/*.zip
             src/out/${{ matrix.target }}/*.exe
+            src/out/${{ matrix.target }}/*.msi
           if-no-files-found: warn
