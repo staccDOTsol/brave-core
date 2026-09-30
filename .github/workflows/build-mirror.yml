@@ -56,7 +56,10 @@ jobs:
 
       - name: depot_tools
         run: |
-          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          for i in 1 2 3 4 5; do
+            git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git && break
+            sleep 15
+          done
           echo "$GITHUB_WORKSPACE/depot_tools" >> $GITHUB_PATH
 
       - name: gclient config + sync
