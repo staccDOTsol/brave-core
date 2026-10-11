@@ -97,3 +97,21 @@ export const Breakdown = styled.dl`
 export const Note = styled.p`
   color: var(--leo-color-text-secondary);
 `
+
+/** 100x.broker action row; greyed out until the creator has a receipt mint. */
+export const Venue = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  font: var(--leo-font-small-regular);
+  a {
+    font-weight: 600;
+  }
+  small {
+    color: var(--leo-color-text-secondary);
+  }
+  &[aria-disabled='true'] > span {
+    color: var(--leo-color-text-disabled);
+  }
+`

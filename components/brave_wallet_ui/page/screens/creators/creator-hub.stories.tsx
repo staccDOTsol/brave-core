@@ -13,12 +13,19 @@ import {
 } from '../../../common/creator-economy/creator-library'
 import { CreatorHubView } from './creator-hub'
 
-function Story({ initial = EMPTY_LIBRARY }: { initial?: CreatorLibrary }) {
+function Story({
+  initial = EMPTY_LIBRARY,
+  receiptMints,
+}: {
+  initial?: CreatorLibrary
+  receiptMints?: Readonly<Record<string, string>>
+}) {
   const [library, setLibrary] = React.useState(initial)
   return (
     <CreatorHubView
       library={library}
       onChange={setLibrary}
+      receiptMints={receiptMints}
     />
   )
 }
@@ -33,6 +40,16 @@ const curated = curateContent(
 export const Empty = { render: () => <Story /> }
 export const FollowingAndCuration = {
   render: () => <Story initial={curated} />,
+}
+/** Fixture only: a valid 32-byte key, not a real creator receipt mint. */
+const receiptMint = '11111111111111111111111111111111'
+export const FollowingWithMint = {
+  render: () => (
+    <Story
+      initial={curated}
+      receiptMints={{ [creator.url]: receiptMint }}
+    />
+  ),
 }
 
 export default {

@@ -2,6 +2,9 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. https://mozilla.org/MPL/2.0/.
 
+import { creatorLinks, isSolanaAddress } from '../../../creator_economy/common/hundredx'
+import type { HundredxCreatorLinks } from '../../../creator_economy/common/hundredx'
+
 interface DetectedCreator {
   id: string
   name: string
@@ -16,6 +19,8 @@ export interface CreatorContext {
   identityStatus: 'provider-id' | 'needs-provider-resolution'
   claimStatus: 'unverified'
   content: { providerId: string; associationStatus: 'unverified' } | null
+  /** 100x.broker links for the creator's receipt mint; null until one is known. */
+  hundredx: HundredxCreatorLinks | null
 }
 
 const providers: Record<string, { hosts: string[]; pattern: RegExp }> = {
@@ -50,9 +55,12 @@ function contentId(platform: string, url: URL): string | null {
 
 // Page metadata is an observation, never a claim proof or authorization to pay.
 // No URL, tracking parameters, avatar URL or browsing history leaves this bridge.
+// The receipt mint is supplied by the caller (the creator service), never read
+// from the page; a malformed mint produces no venue links rather than bad ones.
 export function makeCreatorContext(
   creator: DetectedCreator | null,
   pageURL: string,
+  receiptMint: string | null = null,
 ): CreatorContext | null {
   if (!creator || typeof creator.id !== 'string' || creator.id.length > 128) {
     return null
@@ -85,5 +93,6 @@ export function makeCreatorContext(
     claimStatus: 'unverified',
     content: detectedContent
       ? { providerId: detectedContent, associationStatus: 'unverified' } : null,
+    hundredx: isSolanaAddress(receiptMint) ? creatorLinks(receiptMint) : null,
   }
 }

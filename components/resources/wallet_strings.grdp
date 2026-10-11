@@ -27,6 +27,11 @@
   <message name="IDS_BRAVE_WALLET_CREATORS_MANAGER_SHARE" desc="Label for the manager allocation available to the burn and curation policy" formatter_data="webui=Wallet">Remaining fee budget</message>
   <message name="IDS_BRAVE_WALLET_CREATORS_ESCROW_NOTE" desc="Description of creator fee entitlement and unclaimed escrow" formatter_data="webui=Wallet">The creator share accrues before or after a profile claim. Unclaimed amounts stay reserved for that creator until ownership is verified. Payouts can incur transfer or redemption fees.</message>
   <message name="IDS_BRAVE_WALLET_CREATORS_FUNDING_STATUS" desc="Current availability of creator staking and custody services" formatter_data="webui=Wallet">This is a fee illustration in LST shares, not a funded quote. Creator pool setup, custody sign-in and payouts are not connected in this build.</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_HUNDREDX_LABEL" desc="Accessible name for the row of 100x.broker trading and vault links shown for each creator" formatter_data="webui=Wallet">Trade or park on 100x.broker</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_HUNDREDX_LONG" desc="Link that opens a leveraged long position on the creator token at 100x.broker" formatter_data="webui=Wallet">Long it</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_HUNDREDX_SHORT" desc="Link that opens a leveraged short position on the creator token at 100x.broker" formatter_data="webui=Wallet">Short it</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_HUNDREDX_PARK" desc="Link to the delta-neutral vaults at 100x.broker" formatter_data="webui=Wallet">Park it</message>
+  <message name="IDS_BRAVE_WALLET_CREATORS_HUNDREDX_MINT_FIRST" desc="Hint shown when a creator has no receipt mint yet, so the 100x.broker links are disabled" formatter_data="webui=Wallet">mint first</message>
   <message name="IDS_BRAVE_WALLET_CREATORS_MENU" desc="Android wallet panel menu entry for creator profiles" formatter_data="android_java">Creators</message>
 
   <message name="IDS_TOOLTIP_WALLET" desc="Tooltip to acccess the Brave Wallet">Brave Wallet</message>

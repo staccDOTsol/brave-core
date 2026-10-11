@@ -102,7 +102,7 @@ jobs:
           python3 components/creator_economy/ci/check-service-build.py --gn "$RUNNER_TEMP/creator-gn/gn"
       - name: Type-check creator wallet models
         working-directory: ${{ runner.temp }}
-        run: npm exec --yes --package=typescript@5.9.3 -- tsc --noEmit --strict --target ES2019 --lib ESNext,DOM --module ESNext --moduleResolution bundler "${{ github.workspace }}/components/creator_economy/common/mint-fees.ts" "${{ github.workspace }}/components/brave_wallet_ui/common/creator-economy/creator-library.ts"
+        run: npm exec --yes --package=typescript@5.9.3 -- tsc --noEmit --strict --target ES2019 --lib ESNext,DOM --module ESNext --moduleResolution bundler "${{ github.workspace }}/components/creator_economy/common/mint-fees.ts" "${{ github.workspace }}/components/creator_economy/common/hundredx.ts" "${{ github.workspace }}/components/brave_wallet_ui/common/creator-economy/creator-library.ts"
       - name: Type-check the shared Brave detector
         working-directory: ${{ runner.temp }}
         run: npm exec --yes --package=typescript@5.9.3 -- tsc --noEmit --strict --target ES2022 --lib DOM,DOM.Iterable,ES2022 --module ESNext --moduleResolution bundler "${{ github.workspace }}/components/brave_rewards/resources/creator_detection/creator_detection.ts"

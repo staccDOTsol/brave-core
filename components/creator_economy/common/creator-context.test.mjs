@@ -4,18 +4,20 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { registerHooks } from 'node:module'
-import { makeCreatorContext } from '../../brave_rewards/resources/creator_detection/creator_context.ts'
+import { HUNDREDX_ORIGIN, creatorLinks } from './hundredx.ts'
 
 // Resolve Brave's extensionless TS imports without installing Chromium tooling.
 registerHooks({
   resolve(specifier, context, nextResolve) {
-    if (context.parentURL?.endsWith('/creator_detection.ts')
-      && ['./helpers', './creator_context'].includes(specifier)) {
+    if (context.parentURL?.endsWith('.ts') && /^\.\.?\//.test(specifier)
+      && !/\.[cm]?[jt]s$/.test(specifier)) {
       return nextResolve(`${specifier}.ts`, context)
     }
     return nextResolve(specifier, context)
   },
 })
+// Dynamic imports run after the hook; a static import would resolve before it.
+const { makeCreatorContext } = await import('../../brave_rewards/resources/creator_detection/creator_context.ts')
 const { initializeDetector } = await import('../../brave_rewards/resources/creator_detection/creator_detection.ts')
 
 const youtube = { id: 'youtube#channel:UCabcdefghijklmnopqrstuv', name: 'Example' }
@@ -115,4 +117,29 @@ test('navigation during detection discards the old page identity', async () => {
     globalThis.self = previousSelf
     globalThis.location = previousLocation
   }
+})
+
+const receiptMint = 'So11111111111111111111111111111111111111112'
+
+test('detected context gains a null hundredx field and keeps its version-1 shape', () => {
+  const context = makeCreatorContext(youtube, 'https://www.youtube.com/watch?v=abcdefghijk')
+  assert.equal(context.version, 1)
+  assert.equal(context.hundredx, null)
+  assert.deepEqual(Object.keys(context), ['version', 'platform', 'namespace', 'providerId',
+    'alias', 'identityStatus', 'claimStatus', 'content', 'hundredx'])
+})
+
+test('a known receipt mint yields 100x.broker links; malformed mints yield none', () => {
+  const page = 'https://www.youtube.com/watch?v=abcdefghijk&tracking=private'
+  const context = makeCreatorContext(youtube, page, receiptMint)
+  assert.deepEqual(context.hundredx, creatorLinks(receiptMint))
+  assert.ok(context.hundredx.long.startsWith(`${HUNDREDX_ORIGIN}/new?mint=${receiptMint}`))
+  assert.ok(context.hundredx.park.startsWith(`${HUNDREDX_ORIGIN}/yield`))
+  for (const url of [context.hundredx.long, context.hundredx.short, context.hundredx.park]) {
+    assert.ok(!url.includes('youtube') && !url.includes('tracking') && !url.includes('/m/'))
+  }
+  for (const bad of ['', 'not-a-mint', receiptMint.slice(1), '2'.repeat(32), undefined]) {
+    assert.equal(makeCreatorContext(youtube, page, bad).hundredx, null, String(bad))
+  }
+  assert.equal(makeCreatorContext(youtube, 'https://x.com/example', receiptMint), null)
 })

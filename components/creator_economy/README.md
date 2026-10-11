@@ -16,6 +16,7 @@ to be integrated. No controller or new browser binary is deployed by this patch.
 - `../brave_wallet_ui/page/screens/creators`: actual wallet screen and stories.
 - `../brave_wallet_ui/common/creator-economy`: validated local creator library.
 - `common/mint-fees.ts`: mint allocation used by the wallet and accounting model.
+- `common/hundredx.ts`: 100x.broker link builders (markets, mint resolver, vaults, bag) with the deployer referral, used by the wallet screen and the detection bridge.
 - `common/economics.mjs`: integer pool accounting and fee settlement model.
 - `common/bootstrap.mjs`: setup and intent idempotency model.
 - [Wizards settlement service](server/settlement/README.md): server-side Privy

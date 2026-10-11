@@ -26,6 +26,10 @@ import {
   formatPoolTokens,
 } from '../../../../creator_economy/common/mint-fees'
 import {
+  HUNDREDX_PITCH,
+  creatorLinks,
+} from '../../../../creator_economy/common/hundredx'
+import {
   Actions,
   Breakdown,
   Card,
@@ -33,6 +37,7 @@ import {
   Hub,
   Items,
   Note,
+  Venue,
 } from './creator-hub.style'
 
 const LIBRARY_KEY = 'BRAVE_WALLET_CREATOR_LIBRARY_V1'
@@ -40,10 +45,59 @@ const LIBRARY_KEY = 'BRAVE_WALLET_CREATOR_LIBRARY_V1'
 interface Props {
   library: CreatorLibrary
   onChange: (next: CreatorLibrary) => void
+  /**
+   * Receipt mint per creator URL, resolved by the creator service. Never read
+   * from local storage: a persisted mint could point trades at another token.
+   */
+  receiptMints?: Readonly<Record<string, string>>
+}
+
+/** "Long it · Short it · Park it" on 100x.broker; disabled until a mint exists. */
+function HundredxRow({ mint }: { mint?: string | null }) {
+  const links = (() => {
+    try {
+      return mint ? creatorLinks(mint) : null
+    } catch {
+      return null
+    }
+  })()
+  const actions = [
+    { id: 'long', label: S.BRAVE_WALLET_CREATORS_HUNDREDX_LONG, href: links?.long },
+    { id: 'short', label: S.BRAVE_WALLET_CREATORS_HUNDREDX_SHORT, href: links?.short },
+    { id: 'park', label: S.BRAVE_WALLET_CREATORS_HUNDREDX_PARK, href: links?.park },
+  ]
+  return (
+    <Venue
+      role='group'
+      aria-label={getLocale(S.BRAVE_WALLET_CREATORS_HUNDREDX_LABEL)}
+      aria-disabled={!links}
+      title={HUNDREDX_PITCH}
+    >
+      {actions.map((action, index) => (
+        <React.Fragment key={action.id}>
+          {index > 0 && <span aria-hidden='true'>·</span>}
+          {action.href ? (
+            <a
+              href={action.href}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              {getLocale(action.label)}
+            </a>
+          ) : (
+            <span>{getLocale(action.label)}</span>
+          )}
+        </React.Fragment>
+      ))}
+      {!links && (
+        <small>{getLocale(S.BRAVE_WALLET_CREATORS_HUNDREDX_MINT_FIRST)}</small>
+      )}
+    </Venue>
+  )
 }
 
 /** Native wallet content. Financial state will come from authenticated services. */
-export function CreatorHubView({ library, onChange }: Props) {
+export function CreatorHubView({ library, onChange, receiptMints = {} }: Props) {
   const [profileURL, setProfileURL] = React.useState('')
   const [contentURL, setContentURL] = React.useState('')
   const [selectedCreator, setSelectedCreator] = React.useState('')
@@ -119,6 +173,7 @@ export function CreatorHubView({ library, onChange }: Props) {
                   {item.label}
                 </a>
                 <Note>{getLocale(S.BRAVE_WALLET_CREATORS_UNVERIFIED)}</Note>
+                <HundredxRow mint={receiptMints[item.url]} />
                 <Button
                   kind='plain'
                   size='small'
@@ -151,6 +206,7 @@ export function CreatorHubView({ library, onChange }: Props) {
               </leo-option>
             ))}
           </Dropdown>
+          {selection && <HundredxRow mint={receiptMints[selection]} />}
           <Input
             value={contentURL}
             onInput={(event) => setContentURL(event.value)}

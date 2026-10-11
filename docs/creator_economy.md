@@ -274,6 +274,34 @@ successfully lists wallets with the configured application credentials. The
 settlement service can provision dedicated app-controlled treasuries; this does
 not constitute a finished custodial user-wallet or funded browser integration.
 
+## Trading and yield venue: 100x.broker
+
+[100x.broker](https://100x.broker) is the trading and yield venue every creator
+surface links to: ±100× long/short markets and delta-neutral vaults on Solana.
+"You long it? Long it. Short? Short it. Don't want to be long or short but think
+it's gonna be a wild ride? Park it."
+
+- Venue URLs are assembled only in
+  `components/creator_economy/common/hundredx.ts`. The wallet creator screen
+  renders a "Long it · Short it · Park it" row for each creator, and
+  `detectContext()` adds a `hundredx` field with the same links when a receipt
+  mint is known (`null` otherwise; the rest of the detected shape is unchanged).
+- Referral: every link carries `?ref=<wallet>`. The site stores the ref and
+  routes 50% of its 0.1% stake-pool deposit fee to that wallet, on-chain, for as
+  long as that visitor keeps using the site. The browser's ref is the deployer
+  wallet (`HUNDREDX_DEFAULT_REF`). It is unset in source until the deployer
+  address is configured; until then links carry no `ref`.
+- Quote asset: the r-fstacc stake-pool token
+  `pSYRpDqr847kB2nD5ZhjcPsHLV2ZpUxweXm1MwiSTcc`, a SanctumSpl pool
+  (`SP12tWFxD9oJsVWNavTTBZvMbA6gkAmxtVgxdqvyvhY`), the same program the creator
+  pools use.
+- A market exists only for a mint with a Raydium CLMM pool against SOL, USDC or
+  USDT; a new creator receipt mint will not have one at first. The universal
+  creator link is therefore `/new?mint=<receiptMint>`, which shows the existing
+  market or the one-transaction "cook up a market" flow. Market keys are never
+  fabricated client-side. Receipt mints come from the creator service, never
+  from local storage or page content.
+
 ## Existing permissionless router
 
 [OKX PR #4](https://github.com/okxlabs/Web3-DEX-Router-Solana-V1/pull/4)
