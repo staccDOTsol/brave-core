@@ -30,8 +30,12 @@ transpile_web_ui("creator_detection") {
     ],
   ]
   resource_name = "creator_detection"
-  imports_from =
-      [ "//brave/components/brave_rewards/resources/creator_detection/" ]
+  # creator_context.ts imports creator_economy/common/hundredx.ts;
+  # verify-webpack-srcs rejects any import outside imports_from.
+  imports_from = [
+    "//brave/components/brave_rewards/resources/creator_detection/",
+    "//brave/components/creator_economy/common/",
+  ]
 }
 
 pack_web_resources("creator_detection_generated") {
