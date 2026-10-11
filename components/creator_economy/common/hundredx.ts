@@ -34,7 +34,9 @@ export const HUNDREDX_PITCH =
  * settlement service's `feeDistributor` is private config
  * (server/settlement/README.md). While null, links carry no `ref`.
  */
-export const HUNDREDX_DEFAULT_REF: string | null = null
+// The house wallet: the same key 100x.broker itself shares links under. Half of the 0.1% deposit fee on anything a
+// browser user does there lands in its r-fstacc account, on-chain.
+export const HUNDREDX_DEFAULT_REF: string | null = '331nEBz4i3XjyaUHVyHnpw9xBoW7D6P1qMPnUPd76Mth'
 
 /** `?side=0` preselects UP (long); `?side=1` preselects DOWN (short). */
 export const HUNDREDX_SIDE_LONG = 0
